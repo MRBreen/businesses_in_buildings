@@ -11,7 +11,7 @@ table = db['meta']"""
 
 
 class extract(object):
-    """An object which holds extracted values using BeautifulSoup
+    """Creates object which holds extracted values using BeautifulSoup
     """
     def __init__(self):
         self.soup = None
@@ -22,12 +22,16 @@ class extract(object):
         self.ubi = None
 
     def create_soup(self, filename):
+        """Creates the object
+        """
         folder = ('../data/')
         with open (folder+filename) as pagefile:
             page_source = pagefile.read()
         self.soup = BeautifulSoup(page_source, 'html.parser')
 
     def get_buisiness_name(self):
+        """gets the businenss name
+        """
         self.business_name = self.soup.find(id='caption2_c-e')
         if self.business_name is not None:
             self.business_name = self.business_name.contents[0].encode('utf-8').strip()
@@ -55,17 +59,27 @@ class extract(object):
         if self.ubi is not None:
             self.ubi = self.ubi.contents[0].encode('utf-8').strip()
         else:
-            self.ubi=""
+            self.ubi="" 
 
     def build(self, filename):
+        """main build function to get various fields
+        arg: filname of the file to be extracted
+        """
         self.create_soup(filename)
         self.get_buisiness_name()
         self.get_address_one()
-        #self.get_address_mailing()
+        self.get_address_mailing()
         self.get_ubi()
 
-    def write_json(self):
-        pass
+    def db_add(self):
+        """adds a recrod to mongoDB of all the fields
+        """
+        biz.insert_one({
+                'Bus Name' : self.business_name,
+                'Address' : self.address_one,
+                'Addr_mail' : self.address_mailing,
+                'UBI' : self.ubi
+            })
 
 
 ##if __name__ == '__main__':
