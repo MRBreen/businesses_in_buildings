@@ -78,7 +78,9 @@ class extract(object):
             })
 
 if __name__ == '__main__':
-    #code loops through all html files in a folder
+    """code processes all html files in data folder and
+    saves fields to records in mongoDB
+    """
     collection = biz  # more easily change collections - update name at top also
     print "Initial record count:" , collection.count()
     for file in os.listdir('../data/'):
