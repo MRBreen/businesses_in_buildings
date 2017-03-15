@@ -6,7 +6,7 @@ import random
 import string
 
 def sleep():
-    time.sleep(5+random.random()*5)
+    time.sleep(5+random.random()*2.2)
 
 # from http://programminghistorian.org/lessons/output-data-as-html-file
 def write_html(street, serial=0):
@@ -22,6 +22,7 @@ def street_scrape(street_list):
     '''Scrapes data from list of street
     '''
     for street in street_list:
+        sleep()
         street_field = browser.find_element_by_name("c-f1")
         city_field = browser.find_element_by_name("c-i1")
         street_field.send_keys(street)
@@ -29,28 +30,40 @@ def street_scrape(street_list):
         search_button = browser.find_element_by_id("c-84")
         sleep()
         search_button.click()
-        page = 0
-        # address_scrape()
-        #### might make another function here
+
+
+def get_fifty(browser, page):
+    """Scrapes up to 50 pages and saves as html files
+    """
+    sleep()
+    links = browser.find_elements_by_css_selector("a.DocFieldLink")
+    links = links[2:62]
+    links = filter(None, links)
+    stop = len(links)
+    print "Length is" , stop
+    i = 0
+    for i in range(stop):
         sleep()
         links = browser.find_elements_by_css_selector("a.DocFieldLink")
-        links = links[2:52]
+        links = links[2:52]   ##exclude links 0 and 1
         links = filter(None, links)
-        while i < 50:
-            sleep()
-            links = browser.find_elements_by_css_selector("a.DocFieldLink")
-            links = links[2:52]   ##exclude links 0 and 1
-            links = filter(None, links)
-            sleep()
-            links[i].click()
-            sleep()
-            details = browser.page_source
-            serial = str(page*50 + i)
-            write_html(details, street, serial)
-            sleep()
-            browser.back()
-            i+=1
+        sleep()
+        print i
+        links[i].click()
+        sleep()
+        details = browser.page_source
+        serial = str(page*50 + i)
+        print serial
+        write_html(details, street, serial)
+        sleep()
+        browser.back()
+        i+=1
 
+def next_page(browser):
+    nextpages = browser.find_elements_by_css_selector(
+    "a.TablePageLinkNext")
+    nextpages = [nextpage for nextpage in nextpages if nextpage.is_displayed()]
+    nextpages[0].click()
 
     return None
 
@@ -65,3 +78,9 @@ if __name__ == '__main__':
     browser.switch_to_window(new_window)
     sleep()
     street_scrape(['jackson'])  # can point to data file of csv
+    page = 0
+    get_fifty(browser, page)
+    for pages in range(12):
+         next_page(browser)
+         page += 1
+         get_fifty(browser, page)
