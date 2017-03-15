@@ -21,6 +21,7 @@ class extract(object):
         self.address_one = None
         self.address_mailing = None
         self.ubi = None
+        self.city = 'Seattle'
 
     def create_soup(self, filename):
         folder = ('../data/')
@@ -77,7 +78,8 @@ class extract(object):
                 'Bus Name' : self.business_name,
                 'Address' : self.address_one,
                 'Addr_mail' : self.address_mailing,
-                'UBI' : self.ubi
+                'UBI' : self.ubi,
+                'City' : self.city
             })
 
 if __name__ == '__main__':
