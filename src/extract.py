@@ -9,7 +9,7 @@ import os
 #Define the MongoDB database and collection
 db_cilent = MongoClient()
 db = db_cilent['WBLS']
-biz = db.WBLS
+collection = db.biz
 
 class extract(object):
     """Creates object which holds extracted values using BeautifulSoup
@@ -63,6 +63,9 @@ class extract(object):
             self.ubi=""
 
     def build(self, filename):
+        """Calls subfunction which create values for the parameters
+        arg: filename is html file to be extracted
+        """
         self.create_soup(filename)
         self.get_buisiness_name()
         self.get_address_one()
@@ -79,9 +82,10 @@ class extract(object):
 
 if __name__ == '__main__':
     """code processes all html files in data folder and
-    saves fields to records in mongoDB
+    saves fields to records in mongoDB.
+    collection name is defined at the top of the code.
     """
-    collection = biz  # more easily change collections - update name at top also
+    print "DB and collection is:" , collection.full_name
     print "Initial record count:" , collection.count()
     for file in os.listdir('../data/'):
         if '.html' in file:
