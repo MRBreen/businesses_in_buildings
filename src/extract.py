@@ -1,14 +1,15 @@
 from bs4 import BeautifulSoup
-
-"""from pymongo import MongoClient
+#import json
+from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError, CollectionInvalid
+import string
+import os
 
 
-# Define the MongoDB database and table
+#Define the MongoDB database and collection
 db_cilent = MongoClient()
 db = db_cilent['WBLS']
-table = db['meta']"""
-
+biz = db.WBLS
 
 class extract(object):
     """Creates object which holds extracted values using BeautifulSoup
@@ -22,16 +23,12 @@ class extract(object):
         self.ubi = None
 
     def create_soup(self, filename):
-        """Creates the object
-        """
         folder = ('../data/')
         with open (folder+filename) as pagefile:
             page_source = pagefile.read()
         self.soup = BeautifulSoup(page_source, 'html.parser')
 
     def get_buisiness_name(self):
-        """gets the businenss name
-        """
         self.business_name = self.soup.find(id='caption2_c-e')
         if self.business_name is not None:
             self.business_name = self.business_name.contents[0].encode('utf-8').strip()
@@ -43,6 +40,8 @@ class extract(object):
         if self.address_one is not None:
             if len(self.address_one.contents) != 0:
                 self.address_one = self.address_one.contents[0].encode('utf-8').strip()
+            else:
+                self.address_one=""
         else:
             self.address_one=""
 
@@ -51,6 +50,8 @@ class extract(object):
         if self.address_mailing is not None:
             if len(self.address_mailing.contents) != 0:
                 self.address_mailing = self.address_mailing.contents[0].encode('utf-8').strip()
+            else:
+                self.address_mailing=""
         else:
             self.address_mailing=""
 
@@ -59,28 +60,30 @@ class extract(object):
         if self.ubi is not None:
             self.ubi = self.ubi.contents[0].encode('utf-8').strip()
         else:
-            self.ubi="" 
+            self.ubi=""
 
     def build(self, filename):
-        """main build function to get various fields
-        arg: filname of the file to be extracted
-        """
         self.create_soup(filename)
         self.get_buisiness_name()
         self.get_address_one()
         self.get_address_mailing()
         self.get_ubi()
 
-    def db_add(self):
-        """adds a recrod to mongoDB of all the fields
-        """
-        biz.insert_one({
+    def db_add(self, collection):
+        collection.insert_one({
                 'Bus Name' : self.business_name,
                 'Address' : self.address_one,
                 'Addr_mail' : self.address_mailing,
                 'UBI' : self.ubi
             })
 
-
-##if __name__ == '__main__':
-##    pass
+if __name__ == '__main__':
+    #code loops through all html files in a folder
+    collection = biz  # more easily change collections - update name at top also
+    print "Initial record count:" , collection.count()
+    for file in os.listdir('../data/'):
+        if '.html' in file:
+            extracted = extract()
+            extracted.build(file)
+            extracted.db_add(collection)
+    print "Final record count:" , collection.count()
