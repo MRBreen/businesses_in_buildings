@@ -17,6 +17,25 @@ def write_html(details, street, serial=0):
     f = open(filename, 'w')
     f.write('../data/' + details.encode('utf-8'))
 
+def get_pages(browser):
+    """Gets total number of pages from the records table.
+    """
+    total_records = browser.find_elements_by_css_selector("span.TablePageInfo")
+    total_records = [total_record for total_record in total_records if total_record.text]
+    total_record = total_records[0]
+    recordtext = total_record.text.encode('utf-8')
+    recordtext = recordtext.encode('utf-8')
+    _text, recordmax = recordtext.strip().split("of")
+    recordmax = int(recordmax.strip().replace(',', ''))
+    return((recordmax-1)/50)
+
+def on_lookup(browser):
+    """Returns True if the scraper in on the Lookup Page
+    """
+    lookup = browser.find_elements_by_class_name("FastTitlebarCaption")
+    lookup = [look for look in lookup if look.is_displayed() ]
+    lookpage = lookup[0]
+    return (len(lookpage.text) == 23)
 
 def street_scrape(street):
     '''Scrapes data from street
@@ -30,42 +49,81 @@ def street_scrape(street):
     sleep()
     search_button.click()
 
+def get_good_links(browser,):
+    """Returns good link on the Lookup Page...has logic to validate and retry
+    """
+    links = browser.find_elements_by_css_selector("a.DocFieldLink")
+    links = links[2:52]   ##exclude links 0 and 1
+    links = filter(None, links)
+    if on_lookup(browser) == False:
+        print "not on expected page, refresh - get_good_links"
+        browser.refresh()
+        sleep()
+        if on_lookup(browser) == False:
+            print "not on expected page, back - get_good_links"
+            browser.back()
+    if len(links) == 0:
+        print "refresh get_good_links"
+        browser.refresh()
+        sleep()
+        links = browser.find_elements_by_css_selector("a.DocFieldLink")
+        links = filter(None, links)
+        links = links[2:52]   ##exclude links 0 and 1
+    if len(links) == 0:
+        print "back get_good_links"
+        browser.back()
+        sleep()
+        links = browser.find_elements_by_css_selector("a.DocFieldLink")
+        links = filter(None, links)
+        links = links[2:52]   ##exclude links 0 and 1
+    return links
+
 
 def get_fifty(browser, street, page):
     """Scrapes up to 50 pages and saves as html files
     """
     sleep()
-    links = browser.find_elements_by_css_selector("a.DocFieldLink")
-    links = links[2:52]
-    links = filter(None, links)
-    stop = len(links)
-    print "Length is" , stop
-    for i in range(48, stop):
+    links = get_good_links(browser)
+    print "length of links" , len(links)
+    print "i = " , i
+    if i < len(links):
         sleep()
-        links = browser.find_elements_by_css_selector("a.DocFieldLink")
-        links = links[2:52]   ##exclude links 0 and 1
-        links = filter(None, links)
-        sleep()
-        print i
-        print "length of links: " , len(links)
         links[i].click()
         sleep()
         details = browser.page_source
         serial = str(page*50 + i)
-        print serial
+        print "serial: ", serial
         write_html(details, street, serial)
         sleep()
         browser.back()
         sleep()
-        i+=1
+        if on_lookup(browser) == False:
+            print "not on expected page, refresh"
+            browser.refresh()
+            sleep()
+            if on_lookup(browser) == False:
+                print "not on expected page, back"
+                browser.execute_script("window.history.go(-1)")
 
 def next_page(browser):
-    nextpages = browser.find_elements_by_css_selector(
-    "a.TablePageLinkNext")
+    """Get and validates data for next page
+    """
+    nextpages = browser.find_elements_by_css_selector("a.TablePageLinkNext")
     nextpages = [nextpage for nextpage in nextpages if nextpage.is_displayed()]
-    nextpages[0].click()
-
-    return None
+    if len(nextpages) == 0:
+        sleep()
+        browser.refresh
+        sleep()
+        nextpages = browser.find_elements_by_css_selector("a.TablePageLinkNext")
+        nextpages = [nextpage for nextpage in nextpages if nextpage.is_displayed()]
+        if len(nextpages) == 0:
+            browser.execute_script("window.history.go(-1)")
+            #browser.back()
+            sleep()
+            nextpages = browser.find_elements_by_css_selector("a.TablePageLinkNext")
+            nextpages = [nextpage for nextpage in nextpages if nextpage.is_displayed()]
+    if len(nextpages) != 0:
+        nextpages[0].click()
 
 if __name__ == '__main__':
     browser = webdriver.Firefox()
@@ -77,12 +135,57 @@ if __name__ == '__main__':
     new_window = browser.window_handles[1]
     browser.switch_to_window(new_window)
     sleep()
-    street_list = ['jackson']
+    street_list = ['1st',
+    '2nd',
+    '3rd',
+    '4th',
+    '5th',
+    '6th',
+    '7th',
+    '8th',
+    '9th',
+    'Alaskan',
+    'Boren',
+    'Boylston',
+    'Convention',
+    'Court',
+    'Eastlake',
+    'Elliott',
+    'Howell',
+    'Hubbell',
+    'Loos',
+    'Minor',
+    'Olive',
+    'Pike',
+    'Pine',
+    'Post',
+    'Priantat',
+    'Seneca',
+    'Stewart',
+    'Summit',
+    'Terry',
+    'Union',
+    'University',
+    'Virginia',
+    'Western',
+    'Westlake',
+    'Yale'
+    'Community Club']
     for street in street_list:
-        street_scrape(street)  # can point to data file of csv
-        page = 0
-        get_fifty(browser, street, page)
-        for pages in range(13):
-             next_page(browser)
-             page += 1
+        sleep()
+        street_field = browser.find_element_by_name("c-f1")
+        city_field = browser.find_element_by_name("c-i1")
+        street_field.clear()
+        city_field.clear()
+        street_field.send_keys(street)
+        city_field.send_keys("Seattle")
+        search_button = browser.find_element_by_id("c-84")
+        sleep()
+        search_button.click()
+        sleep()
+
+        pages = get_pages(browser)
+        print "pages:" , pages
+        for page in range(pages):
              get_fifty(browser, street, page)
+             next_page(browser)
