@@ -4,9 +4,10 @@ from selenium.webdriver.common.keys import Keys
 import time
 import random
 import string
+import sys
 
 def sleep():
-    time.sleep(5+random.random()*2.2)
+    time.sleep(3+random.random()*1.5)
 
 # from http://programminghistorian.org/lessons/output-data-as-html-file
 def write_html(details, street, serial=0):
@@ -34,8 +35,10 @@ def on_lookup(browser):
     """
     lookup = browser.find_elements_by_class_name("FastTitlebarCaption")
     lookup = [look for look in lookup if look.is_displayed() ]
-    lookpage = lookup[0]
-    return (len(lookpage.text) == 23)
+    if len(lookup) != 0:
+        lookpage = lookup[0]
+        if (len(lookpage.text) == 23):
+            return True
 
 def street_scrape(street):
     '''Scrapes data from street
@@ -49,61 +52,71 @@ def street_scrape(street):
     sleep()
     search_button.click()
 
-def get_good_links(browser,):
-    """Returns good link on the Lookup Page...has logic to validate and retry
+def get_lookup_link(browser):
+    """Returns list of links...not very robust
     """
     links = browser.find_elements_by_css_selector("a.DocFieldLink")
-    links = links[2:52]   ##exclude links 0 and 1
     links = filter(None, links)
+    links = links[2:52]   ##exclude links 0 and 1
+    return(links)
+
+def get_good_links(browser):
+    """Returns good link on the Lookup Page...has logic to validate and retry
+    """
+    links = get_lookup_link(browser)
     if on_lookup(browser) == False:
-        print "not on expected page, refresh - get_good_links"
-        browser.refresh()
+        print "not on lookup page, refresh - get_good_links"
         sleep()
+        browser.refresh()
+        links = get_lookup_link(browser)
         if on_lookup(browser) == False:
-            print "not on expected page, back - get_good_links"
+            print "not on lookup page, back - get_good_links"
             browser.back()
-    if len(links) == 0:
-        print "refresh get_good_links"
+            links = get_lookup_link(browser)
+            if on_lookup(browser) == False:
+                print "not on lookup page, hard back - get_good_links"
+                browser.execute_script("window.history.go(-1)")
+                sleep()
+                links = get_lookup_link(browser)
+    if len(links) < 2:
+        print "len less than 2 - refresh get_good_links"
         browser.refresh()
         sleep()
-        links = browser.find_elements_by_css_selector("a.DocFieldLink")
-        links = filter(None, links)
-        links = links[2:52]   ##exclude links 0 and 1
-    if len(links) == 0:
-        print "back get_good_links"
-        browser.back()
-        sleep()
-        links = browser.find_elements_by_css_selector("a.DocFieldLink")
-        links = filter(None, links)
-        links = links[2:52]   ##exclude links 0 and 1
+        links = get_lookup_link(browser)
+        if len(links) < 2:
+            print "len less than 2 - hard back get_good_links"
+            browser.execute_script("window.history.go(-1)")
+            sleep()
+            links = get_lookup_link(browser)
     return links
 
 
 def get_fifty(browser, street, page):
     """Scrapes up to 50 pages and saves as html files
     """
-    sleep()
-    links = get_good_links(browser)
-    print "length of links" , len(links)
-    print "i = " , i
-    if i < len(links):
+    for i in range(50):
         sleep()
-        links[i].click()
-        sleep()
-        details = browser.page_source
-        serial = str(page*50 + i)
-        print "serial: ", serial
-        write_html(details, street, serial)
-        sleep()
-        browser.back()
-        sleep()
-        if on_lookup(browser) == False:
-            print "not on expected page, refresh"
-            browser.refresh()
+        links = get_good_links(browser)
+        print "length of links" , len(links)
+        print "i = " , i
+        if i < len(links):
+            sleep()
+            links[i].click()
+            sleep()
+            details = browser.page_source
+            serial = str(page*50 + i)
+            print "serial: ", serial
+            write_html(details, street, serial)
+            sleep()
+            browser.back()
             sleep()
             if on_lookup(browser) == False:
-                print "not on expected page, back"
-                browser.execute_script("window.history.go(-1)")
+                print "not on expected page, refresh"
+                browser.refresh()
+                sleep()
+                if on_lookup(browser) == False:
+                    print "not on expected page, back"
+                    browser.execute_script("window.history.go(-1)")
 
 def next_page(browser):
     """Get and validates data for next page
@@ -135,8 +148,7 @@ if __name__ == '__main__':
     new_window = browser.window_handles[1]
     browser.switch_to_window(new_window)
     sleep()
-    street_list = ['1st',
-    '2nd',
+    street_list = ['2nd',
     '3rd',
     '4th',
     '5th',
@@ -144,6 +156,7 @@ if __name__ == '__main__':
     '7th',
     '8th',
     '9th',
+    '1st',
     'Alaskan',
     'Boren',
     'Boylston',
