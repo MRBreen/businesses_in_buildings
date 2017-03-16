@@ -22,6 +22,7 @@ class extract(object):
         self.address_mailing = None
         self.ubi = None
         self.city = 'Seattle'
+        self.zip_code
 
     def create_soup(self, filename):
         folder = ('../data/')
@@ -45,6 +46,17 @@ class extract(object):
                 self.address_one=""
         else:
             self.address_one=""
+
+    def get_zip_code(self):
+        self.zip_code = self.soup.find(id='caption2_c-v')
+        if self.zip_code is not None:
+            if len(self.zip_code.contents) != 0:
+                zipfield = self.zip_code.contents[0].encode('utf-8').strip()
+                self.zip_code = zipfield[:-5]
+            else:
+                self.zip_code=""
+        else:
+            self.zip_code=""
 
     def get_address_mailing(self):
         self.address_mailing = self.soup.find(id='caption2_c-01')
@@ -72,14 +84,16 @@ class extract(object):
         self.get_address_one()
         self.get_address_mailing()
         self.get_ubi()
+        self.get_zipcode()
 
     def db_add(self, collection):
         collection.insert_one({
-                'Bus Name' : self.business_name,
-                'Address' : self.address_one,
-                'Addr_mail' : self.address_mailing,
-                'UBI' : self.ubi,
-                'City' : self.city
+                "Bus Name" : self.business_name,
+                "Address" : self.address_one,
+                "Addr_mail" : self.address_mailing,
+                "UBI" : self.ubi,
+                "City" : self.city
+                "Zip" : self.zipcode
             })
 
 if __name__ == '__main__':
