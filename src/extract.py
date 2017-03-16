@@ -22,7 +22,7 @@ class extract(object):
         self.address_mailing = None
         self.ubi = None
         self.city = 'Seattle'
-        self.zip_code
+        self.zip_code = None
 
     def create_soup(self, filename):
         folder = ('../data/')
@@ -52,7 +52,7 @@ class extract(object):
         if self.zip_code is not None:
             if len(self.zip_code.contents) != 0:
                 zipfield = self.zip_code.contents[0].encode('utf-8').strip()
-                self.zip_code = zipfield[:-5]
+                self.zip_code = zipfield[-5:]
             else:
                 self.zip_code=""
         else:
@@ -84,7 +84,7 @@ class extract(object):
         self.get_address_one()
         self.get_address_mailing()
         self.get_ubi()
-        self.get_zipcode()
+        self.get_zip_code()
 
     def db_add(self, collection):
         collection.insert_one({
@@ -92,8 +92,8 @@ class extract(object):
                 "Address" : self.address_one,
                 "Addr_mail" : self.address_mailing,
                 "UBI" : self.ubi,
-                "City" : self.city
-                "Zip" : self.zipcode
+                "City" : self.city,
+                "Zip" : self.zip_code
             })
 
 if __name__ == '__main__':
