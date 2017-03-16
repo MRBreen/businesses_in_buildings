@@ -90,6 +90,17 @@ def get_good_links(browser):
             links = get_lookup_link(browser)
     return links
 
+def write_index(street, page, i):
+    row = street + ',' + str(page) + ',' + str(i) + ','
+    with open('../data/records_index.csv','a') as myfile:
+        myfile.write(row)
+
+def get_index():
+    with open("records_index.csv", "rb") as myfile:
+        b = myfile.read()
+    b = b.split(',')
+    b = b[-4:-1]
+    return (b[0], b[1], b[2][:-2])
 
 def get_fifty(browser, street, page):
     """Scrapes up to 50 pages and saves as html files
@@ -100,14 +111,14 @@ def get_fifty(browser, street, page):
         print "length of links" , len(links)
         print "i = " , i
         if i < len(links):
-            sleep()
+            #sleep()
             links[i].click()
             sleep()
             details = browser.page_source
             serial = str(page*50 + i)
             print "serial: ", serial
             write_html(details, street, serial)
-            sleep()
+            write_index(street, page, i)
             browser.back()
             sleep()
             if on_lookup(browser) == False:
@@ -138,6 +149,9 @@ def next_page(browser):
     if len(nextpages) != 0:
         nextpages[0].click()
 
+
+
+
 if __name__ == '__main__':
     browser = webdriver.Firefox()
     browser.get('http://bls.dor.wa.gov/')
@@ -148,15 +162,7 @@ if __name__ == '__main__':
     new_window = browser.window_handles[1]
     browser.switch_to_window(new_window)
     sleep()
-    street_list = ['2nd',
-    '3rd',
-    '4th',
-    '5th',
-    '6th',
-    '7th',
-    '8th',
-    '9th',
-    '1st',
+    street_list = [
     'Alaskan',
     'Boren',
     'Boylston',
@@ -182,8 +188,18 @@ if __name__ == '__main__':
     'Virginia',
     'Western',
     'Westlake',
-    'Yale'
-    'Community Club']
+    'Yale',
+    'Community Club',
+    '2nd',
+    '3rd',
+    '4th',
+    '5th',
+    '6th',
+    '7th',
+    '8th',
+    '9th',
+    '1st']
+    #(last_street = b[0], last_page = b[1], last_record) = get_index()
     for street in street_list:
         sleep()
         street_field = browser.find_element_by_name("c-f1")
