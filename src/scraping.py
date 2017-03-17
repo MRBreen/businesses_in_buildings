@@ -21,7 +21,7 @@ def write_html(details, street, serial=0):
     f = open(filename, 'w')
     f.write('../data/' + details.encode('utf-8'))
 
-def write_to_s3(details, street, serial=0):
+def write_to_s3(details, street, serial):
     """Write HTML to file save in S3
     """
     filename = street + '_' + str(serial) + '.html'
@@ -168,7 +168,7 @@ def get_fifty(browser, street, page):
             serial = str(page*50 + i)
             print "serial: ", serial
             #write_html(details, street, serial)
-            write_to_s3(details, street, serial=0)
+            write_to_s3(details, street, serial)
             #write_to_s3_tracker(details, street, serial=0)
             browser.back()
             sleep()
