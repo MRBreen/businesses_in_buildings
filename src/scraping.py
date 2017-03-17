@@ -49,7 +49,8 @@ def get_current_page(browser):
     """Gets current page number the records table.
     """
     num_pages_raw = browser.find_elements_by_css_selector("a.TablePageLink")
-    num_pages_raw = [num_pages_r for num_pages_r in num_pages_raw if num_pages_r.text]
+    if type(num_pages_raw) != None:
+        num_pages_raw = [num_pages_r for num_pages_r in num_pages_raw if num_pages_r.text]
     if len(num_pages_raw) > 0:
         num_pages = num_pages_raw[2]
         num_pages = num_pages.text.encode('utf-8')
@@ -183,7 +184,8 @@ def next_page(browser):
     """Get and validates data for next page
     """
     nextpages = browser.find_elements_by_css_selector("a.TablePageLinkNext")
-    nextpages = [nextpage for nextpage in nextpages if nextpage.is_displayed()]
+    if len(nextpages) > 0:
+        [nextpage for nextpage in nextpages if nextpage.is_displayed()]
     if len(nextpages) == 0:
         sleep()
         browser.refresh
@@ -282,5 +284,6 @@ if __name__ == '__main__':
         for page in range(page_max):
              get_fifty(browser, street, page)
              next_page(browser)
+             sleep()
              current_page, page_max = get_current_page(browser)
              print "current page is" , current_page
