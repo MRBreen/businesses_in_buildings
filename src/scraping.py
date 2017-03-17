@@ -203,8 +203,8 @@ def next_page(browser):
 
 
 if __name__ == '__main__':
-    browser = webdriver.Firefox()
-    #browser = webdriver.PhantomJS()
+    #browser = webdriver.Firefox()
+    browser = webdriver.PhantomJS()
     browser.get('http://bls.dor.wa.gov/')
     sleep()
     blink = browser.find_element_by_link_text('Business licenses')
@@ -221,6 +221,8 @@ if __name__ == '__main__':
     #'Court',
     #'Occidental',
     #'Eastlake',
+    'S Washington St',
+    '1st Avenue South'
     'S Main',
     'Elliott',
     'Howell',
@@ -280,3 +282,5 @@ if __name__ == '__main__':
         for page in range(pages):
              get_fifty(browser, street, page)
              next_page(browser)
+             current_page, page_max = get_current_page(browser)
+             print "current page is" , current_page
