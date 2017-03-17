@@ -18,6 +18,7 @@ class Tfid_describe(object):
         self.n_features = 10000
         self.tfidf = None
         self.thresh_max = 0.5
+        self.confusion_matrix = confusion_matrix
 
     def fit(self, X, y):
         """Fit a text classifier model.
@@ -75,6 +76,45 @@ class Tfid_describe(object):
         fraud = (raw_data_df.acct_type.isin(fraud_list)).astype(int)
 
         return raw_data_df, fraud
+
+def optimize(self, y, steps=1000):
+        """figures out optimal threhold setting parameters
+        ...the automatic python best value for a threshold was lacking
+        ----------
+        X: A numpy array or list of text fragments, to be used as predictors.
+        y: A numpy array or python list of labels, to be used as responses.
+        steps: number steps from min value to median
+        Returns
+        -------
+        probs: A (n_obs, n_classes) numpy array of predicted class probabilities.
+        """
+
+        #y_predict = self._classifier.predict_log_proba(self.tfidf)
+        y_predict = self._classifier.predict_proba(self.tfidf)
+
+        print 'low: ' , y_predict[:,1].min()
+        high = y_predict[:,1].max()
+        print 'high: ' , high
+        print 'std:' , y_predict[:,1].std()
+        print 'median:' , np.median(y_predict[:,1])
+        span = y_predict[:,1].max()-np.median(y_predict[:,1])
+        print span
+        low = y_predict[:,1].max()
+
+        con_mat = np.zeros((steps, 4))
+        print "total real fraud: " , np.sum(y)
+        print "total data: " , y.shape
+        print "percent of fraud in data: " , np.sum(y)*1.0/y.shape[0]
+        for i, thresh in enumerate(np.linspace(np.median(y_predict[:,1]), high, steps)):
+            y_pred_thresh = (y_predict[:,1] > thresh).astype(int)
+            con_mat[i] = confusion_matrix(y_pred_thresh, y).flatten()
+        profit_mat = np.dot(con_mat, self.profit_weight)
+        step_max = profit_mat.argmax(axis = 0)
+        self.thresh_max = low-.5*span + step_max*(.5*span)/steps
+        self.opt_confusion_mat = con_mat[step_max]
+        y_binary = (y_predict[:,1] > self.thresh_max).astype(int)
+        return y_binary, y_predict[:,1]
+
 
 if __name__=='__main__':
     datafile = '../data/bizmarch.json'
