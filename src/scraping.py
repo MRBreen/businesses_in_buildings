@@ -34,30 +34,29 @@ def write_to_s3(details, street, serial):
 #    with open('../data/records_index_s3.csv','a') as myfile:
 #        myfile.write(row)
 
-"""def get_pages(browser):
-    Gets total number of pages from the records table.
-        total_records = browser.find_elements_by_css_selector("span.TablePageInfo")
+def get_maxrecord(browser):
+    """Gets total records
+    """
+    total_records = browser.find_elements_by_css_selector("span.TablePageInfo")
     total_records = [total_record for total_record in total_records if total_record.text]
     total_record = total_records[0]
     recordtext = total_record.text.encode('utf-8')
     recordtext = recordtext.encode('utf-8')
     _text, recordmax = recordtext.strip().split("of")
-    recordmax = int(recordmax.strip().replace(',', ''))
-    return((recordmax-1)/50)"
-"""
+    return recordmax
+
 def get_current_page(browser):
     """Gets current page number the records table.
     """
-    total_records = browser.find_elements_by_css_selector("span.TablePageLink")
-    total_records = [total_record for total_record in total_records if total_record.text]
-    if len(total_records) > 0:
-        total_record = total_records[0]
-        recordtext = total_record.text.encode('utf-8')
-        recordtext = recordtext.encode('utf-8')
-        current_page, page_max = recordtext.strip().split("of")
+    num_pages_raw = browser.find_elements_by_css_selector("a.TablePageLink")
+    num_pages_raw = [num_pages_r for num_pages_r in num_pages_raw if num_pages_r.text]
+    if len(num_pages_raw) > 0:
+        num_pages = num_pages_raw[2]
+        num_pages = num_pages.text.encode('utf-8')
+        current_page, page_max = num_pages.strip().split("of")
         return int(current_page), int(page_max)
     else:
-        return 1, 5
+        return 0, 0
 
 def on_lookup(browser):
     """Returns True if the scraper in on the Lookup Page
@@ -204,7 +203,8 @@ def next_page(browser):
 
 
 if __name__ == '__main__':
-    browser = webdriver.PhantomJS()
+    browser = webdriver.Firefox()
+    #browser = webdriver.PhantomJS()
     browser.get('http://bls.dor.wa.gov/')
     sleep()
     blink = browser.find_element_by_link_text('Business licenses')
@@ -220,7 +220,8 @@ if __name__ == '__main__':
     #'Convention',
     #'Court',
     #'Occidental',
-    'Eastlake',
+    #'Eastlake',
+    'S Main',
     'Elliott',
     'Howell',
     'Hubbell',
@@ -251,7 +252,9 @@ if __name__ == '__main__':
     '8th',
     '9th',
     '1st']
+
     #(last_street = b[0], last_page = b[1], last_record) = get_index()
+
     for street in street_list:
         sleep()
         street_field = browser.find_element_by_name("c-f1")
@@ -265,8 +268,11 @@ if __name__ == '__main__':
         search_button.click()
         sleep()
 
-        current_page, pages = get_current_page(browser)
-        last_page=0  # remove when file read works
+        recordmax = get_maxrecord(browser)
+        print recordmax
+        current_page, page_max = get_current_page(browser)
+        print "current page is" , current_page
+        print "max page is " , page_max
         for p in range(last_page):
             next_page(browser)
             sleep()
