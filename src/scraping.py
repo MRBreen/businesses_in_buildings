@@ -275,6 +275,7 @@ if __name__ == '__main__':
         current_page, page_max = get_current_page(browser)
         print "current page is" , current_page
         print "max page is " , page_max
+        lastpage = 0  # commenting out
         for p in range(last_page):
             next_page(browser)
             sleep()
