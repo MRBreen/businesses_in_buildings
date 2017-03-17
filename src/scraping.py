@@ -5,30 +5,59 @@ import time
 import random
 import string
 import sys
+import extract
+import boto3
+from bs4 import BeautifulSoup
 
 def sleep():
-    time.sleep(3+random.random()*1.5)
+    time.sleep(2.5+random.random()*1.5)
 
 # from http://programminghistorian.org/lessons/output-data-as-html-file
 def write_html(details, street, serial=0):
     '''Writes HTML to a file in the data folder
     '''
     street = street
-    filename = '../data/' + street + '_' + serial + '.html'
+    filename = '../data/' + street + '_' + str(serial) + '.html'
     f = open(filename, 'w')
     f.write('../data/' + details.encode('utf-8'))
 
-def get_pages(browser):
-    """Gets total number of pages from the records table.
+def write_to_s3(details, street, serial=0):
+    """Write HTML to file save in S3
     """
-    total_records = browser.find_elements_by_css_selector("span.TablePageInfo")
+    filename = street + '_' + str(serial) + '.html'
+    s3 = boto3.resource('s3')
+    b = s3.Bucket('biz-in-buildings')
+    b.put_object(Key=filename, Body=details)
+
+#def write_to_s3_tracker(street, page, i):
+#    row = street + ',' + str(page) + ',' + str(i) + ','
+#    with open('../data/records_index_s3.csv','a') as myfile:
+#        myfile.write(row)
+
+"""def get_pages(browser):
+    Gets total number of pages from the records table.
+        total_records = browser.find_elements_by_css_selector("span.TablePageInfo")
     total_records = [total_record for total_record in total_records if total_record.text]
     total_record = total_records[0]
     recordtext = total_record.text.encode('utf-8')
     recordtext = recordtext.encode('utf-8')
     _text, recordmax = recordtext.strip().split("of")
     recordmax = int(recordmax.strip().replace(',', ''))
-    return((recordmax-1)/50)
+    return((recordmax-1)/50)"
+"""
+def get_current_page(browser):
+    """Gets current page number the records table.
+    """
+    total_records = browser.find_elements_by_css_selector("span.TablePageLink")
+    total_records = [total_record for total_record in total_records if total_record.text]
+    if len(total_records) > 0:
+        total_record = total_records[0]
+        recordtext = total_record.text.encode('utf-8')
+        recordtext = recordtext.encode('utf-8')
+        current_page, page_max = recordtext.strip().split("of")
+        return int(current_page), int(page_max)
+    else:
+        return 1, 5
 
 def on_lookup(browser):
     """Returns True if the scraper in on the Lookup Page
@@ -102,6 +131,27 @@ def get_index():
     b = b[-4:-1]
     return (b[0], b[1], b[2][:-2])
 
+def get_ubi(browser):
+    '''Gets ubi for later validatation
+    arg: browser
+    '''
+    self.ubi = self.soup.find(id='caption2_c-i')
+    if self.ubi is not None:
+        self.ubi = self.ubi.contents[0].encode('utf-8').strip()
+    else:
+        self.ubi=""
+
+def validation_ubi(browser):
+    """Uses BeautifulSoup to validate successful scrape
+    arg: browser
+    """
+    page_values = search_page()
+    page_values.build(file)
+    soup = BeautifulSoup()
+    soup = soup(browser, 'html.parser')
+    return get_ubi(browser)
+
+
 def get_fifty(browser, street, page):
     """Scrapes up to 50 pages and saves as html files
     """
@@ -111,14 +161,15 @@ def get_fifty(browser, street, page):
         print "length of links" , len(links)
         print "i = " , i
         if i < len(links):
-            #sleep()
+            sleep()
             links[i].click()
             sleep()
             details = browser.page_source
             serial = str(page*50 + i)
             print "serial: ", serial
-            write_html(details, street, serial)
-            write_index(street, page, i)
+            #write_html(details, street, serial)
+            write_to_s3(details, street, serial=0)
+            #write_to_s3_tracker(details, street, serial=0)
             browser.back()
             sleep()
             if on_lookup(browser) == False:
@@ -163,11 +214,12 @@ if __name__ == '__main__':
     browser.switch_to_window(new_window)
     sleep()
     street_list = [
-    'Alaskan',
-    'Boren',
-    'Boylston',
-    'Convention',
-    'Court',
+    #'Alaskan',
+    #'Boren',
+    #'Boylston',
+    #'Convention',
+    #'Court',
+    #'Occidental',
     'Eastlake',
     'Elliott',
     'Howell',
@@ -213,7 +265,11 @@ if __name__ == '__main__':
         search_button.click()
         sleep()
 
-        pages = get_pages(browser)
+        current_page, pages = get_current_page(browser)
+        last_page=0  # remove when file read works
+        for p in range(last_page):
+            next_page(browser)
+            sleep()
         print "pages:" , pages
         for page in range(pages):
              get_fifty(browser, street, page)
