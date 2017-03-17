@@ -4,7 +4,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import confusion_matrix
 
-class Tfid_describe():
+class Tfid_describe(object):
     """A text classifier model:
     - Vectorize the raw text into features.
     - Fit a naive bayes model
@@ -75,3 +75,12 @@ class Tfid_describe():
         fraud = (raw_data_df.acct_type.isin(fraud_list)).astype(int)
 
         return raw_data_df, fraud
+
+if __name__=='__main__':
+    datafile = '../data/bizmarch.json'
+    #myko = MykoModel(GradientBoostingClassifier())
+    #X,y = myko.get_data(datafile)
+    #X_train, X_test, y_train, y_test = train_test_split(X,y)
+    #myko.fit(X_train, y_train)
+    #with open('model.pkl', 'w') as f:
+    #    pickle.dump(myko, f)
