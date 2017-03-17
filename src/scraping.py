@@ -279,7 +279,6 @@ if __name__ == '__main__':
         for p in range(last_page):
             next_page(browser)
             sleep()
-        print "pages:" , pages
         for page in range(pages):
              get_fifty(browser, street, page)
              next_page(browser)
