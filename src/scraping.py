@@ -279,7 +279,7 @@ if __name__ == '__main__':
         for p in range(last_page):
             next_page(browser)
             sleep()
-        for page in range(pages):
+        for page in range(page_max):
              get_fifty(browser, street, page)
              next_page(browser)
              current_page, page_max = get_current_page(browser)
