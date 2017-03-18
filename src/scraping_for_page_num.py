@@ -5,7 +5,6 @@ import time
 import random
 import string
 import sys
-import extract
 import boto3
 from bs4 import BeautifulSoup
 import csv
@@ -30,11 +29,6 @@ def write_to_s3(details, street, serial):
     b = s3.Bucket('biz-in-buildings')
     b.put_object(Key=filename, Body=details)
 
-#def write_to_s3_tracker(street, page, i):
-#    row = street + ',' + str(page) + ',' + str(i) + ','
-#    with open('../data/records_index_s3.csv','a') as myfile:
-#        myfile.write(row)
-
 def get_maxrecord(browser):
     """Gets total records
     """
@@ -53,11 +47,12 @@ def get_current_page(browser):
     """
     num_pages_raw = browser.find_elements_by_css_selector("a.TablePageLink")
     if type(num_pages_raw) != None:
-        num_pages_raw = [num_pages_r for num_pages_r in num_pages_raw if num_pages_r.text]
-    if len(num_pages_raw) > 0:
-        num_pages = num_pages_raw[2]
-        num_pages = num_pages.text.encode('utf-8')
-        current_page, page_max = num_pages.strip().split("of")
+        num_pages = [num_pages_r for num_pages_r in num_pages_raw if num_pages_r.text]
+    if len(num_pages) > 0:
+        max_page = num_pages[2]
+        max_page = max_page.text.encode('utf-8')
+        current_page, page_max = max_page.split(" of ")
+        page_max = page_max.replace(',' , '').strip()
         return int(current_page), int(page_max)
     else:
         return 0, 0
@@ -206,8 +201,8 @@ def next_page(browser):
 
 
 if __name__ == '__main__':
-    browser = webdriver.Firefox()
-    #browser = webdriver.PhantomJS()
+    #browser = webdriver.Firefox()
+    browser = webdriver.PhantomJS()
     browser.get('http://bls.dor.wa.gov/')
     sleep()
     blink = browser.find_element_by_link_text('Business licenses')
@@ -248,18 +243,18 @@ if __name__ == '__main__':
     'Weller',
     'Western',
     'Yesler',
-    '10th Avenue',
-    '11th Avenue',
-    '1st Avenue',
-    '2nd Avenue',
-    '2nd Avenue',
-    '3rd Avenue',
-    '4th Avenue',
-    '5th Avenue',
-    '6th Avenue',
-    '7th Avenue',
-    '8th Avenue',
-    '9th Avenue']
+    '10th',
+    '11th',
+    '1st',
+    '2nd',
+    '2nd',
+    '3rd',
+    '4th',
+    '5th',
+    '6th',
+    '7th',
+    '8th',
+    '9th']
 
     #(last_street = b[0], last_page = b[1], last_record) = get_index()
 
