@@ -198,7 +198,7 @@ def next_page(browser):
             sleep()
             nextpages = browser.find_elements_by_css_selector("a.TablePageLinkNext")
             nextpages = [nextpage for nextpage in nextpages if nextpage.is_displayed()]
-    if len(nextpages) != 0:
+    if len(nextpages) > 0:
         nextpages[0].click()
 
 
@@ -216,15 +216,24 @@ if __name__ == '__main__':
     browser.switch_to_window(new_window)
     sleep()
     street_list = [
-    #'Alaskan',
+        '2nd Ave S',
+        '3rd Ave S',
+        '4th Ave S',
+        '5th Ave S',
+        '6th Ave S',
+        '7th Ave S',
+        '8th Ave S',
+        '9th Ave S',
+        '1st Ave S',
+        #'Alaskan',
     #'Boren',
     #'Boylston',
     #'Convention',
     #'Court',
     #'Occidental',
     #'Eastlake',
-    'S Washington St',
-    '1st Avenue South'
+    #'S Washington St',
+    #'1st Avenue South'
     'S Main',
     'Elliott',
     'Howell',
@@ -246,16 +255,7 @@ if __name__ == '__main__':
     'Western',
     'Westlake',
     'Yale',
-    'Community Club',
-    '2nd',
-    '3rd',
-    '4th',
-    '5th',
-    '6th',
-    '7th',
-    '8th',
-    '9th',
-    '1st']
+    'Community Club']
 
     #(last_street = b[0], last_page = b[1], last_record) = get_index()
 
@@ -273,7 +273,7 @@ if __name__ == '__main__':
         sleep()
 
         recordmax = get_maxrecord(browser)
-        print recordmax
+        print "total records for street:" , recordmax
         current_page, page_max = get_current_page(browser)
         print "current page is" , current_page
         print "max page is " , page_max
