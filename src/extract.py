@@ -8,29 +8,33 @@ import os
 
 #Define the MongoDB database and collection
 db_cilent = MongoClient()
-db = db_cilent['WBLS']
+db = db_cilent['wa']
 collection = db.biz
 
 class extract(object):
-    """Creates object which holds extracted values using BeautifulSoup
+    """object holds extracted values using BeautifulSoup
     """
     def __init__(self):
         self.soup = None
         self.business_name = None
         self.address_one = None
-        self.address_one = None
         self.address_mailing = None
         self.ubi = None
         self.city = 'Seattle'
         self.zip_code = None
+        self.entity = None
 
     def create_soup(self, filename):
+        """creates the object and connects to folder
+        """
         folder = ('../data/')
         with open (folder+filename) as pagefile:
             page_source = pagefile.read()
         self.soup = BeautifulSoup(page_source, 'html.parser')
 
     def get_buisiness_name(self):
+        """gets business_name .... all other get_ functions work similarly
+        """
         self.business_name = self.soup.find(id='caption2_c-e')
         if self.business_name is not None:
             self.business_name = self.business_name.contents[0].encode('utf-8').strip()
@@ -47,6 +51,16 @@ class extract(object):
         else:
             self.address_one=""
 
+    def get_address_mailing(self):
+        self.address_mailing = self.soup.find(id='caption2_c-01')
+        if self.address_mailing is not None:
+            if len(self.address_mailing.contents) != 0:
+                self.address_mailing = self.address_mailing.contents[0].encode('utf-8').strip()
+            else:
+                self.address_mailing=""
+        else:
+            self.address_mailing=""
+
     def get_zip_code(self):
         self.zip_code = self.soup.find(id='caption2_c-v')
         if self.zip_code is not None:
@@ -58,22 +72,21 @@ class extract(object):
         else:
             self.zip_code=""
 
-    def get_address_mailing(self):
-        self.address_mailing = self.soup.find(id='caption2_c-01')
-        if self.address_mailing is not None:
-            if len(self.address_mailing.contents) != 0:
-                self.address_mailing = self.address_mailing.contents[0].encode('utf-8').strip()
-            else:
-                self.address_mailing=""
-        else:
-            self.address_mailing=""
-
     def get_ubi(self):
         self.ubi = self.soup.find(id='caption2_c-i')
         if self.ubi is not None:
             self.ubi = self.ubi.contents[0].encode('utf-8').strip()
         else:
             self.ubi=""
+
+    def get_entity(self):
+        """gets entity type
+        """
+        self.entity = self.soup.find(id='caption2_c-g')
+        if self.entity is not None:
+            self.entity = self.entity.contents[0].encode('utf-8').strip()
+        else:
+            self.entity=""
 
     def build(self, filename):
         """Calls subfunction which create values for the parameters
@@ -85,6 +98,7 @@ class extract(object):
         self.get_address_mailing()
         self.get_ubi()
         self.get_zip_code()
+        self.get_entity()
 
     def db_add(self, collection):
         collection.insert_one({
