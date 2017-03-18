@@ -62,7 +62,7 @@ if __name__ == '__main__':
         print "Pages to go: " , i
         next_page(browser)
         sleep()
-        current_page, page_max = get_current_page(broswer)
+        current_page, page_max = get_current_page(browser)
     print "current job: " , street, current_page
     if current_page = 0:
         print "not getting browser responses. quit."
