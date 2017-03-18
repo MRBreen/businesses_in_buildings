@@ -10,8 +10,6 @@ from selenium.webdriver.common.keys import Keys
 import time
 import random
 import string
-import sys
-import extract
 
 if __name__ == '__main__':
     #browser = webdriver.Firefox()

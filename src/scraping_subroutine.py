@@ -5,9 +5,8 @@ import time
 import random
 import string
 import sys
-import extract
 import boto3
-from bs4 import BeautifulSoup
+#from bs4 import BeautifulSoup
 
 def sleep():
     time.sleep(3.7+random.random()*2.5)
