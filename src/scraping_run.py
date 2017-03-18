@@ -13,8 +13,8 @@ import sys
 import extract
 
 if __name__ == '__main__':
-    browser = webdriver.Firefox()
-    #browser = webdriver.PhantomJS()
+    #browser = webdriver.Firefox()
+    browser = webdriver.PhantomJS()
     browser.get('http://bls.dor.wa.gov/')
     sleep()
     blink = browser.find_element_by_link_text('Business licenses')
