@@ -184,7 +184,7 @@ def next_page(browser):
     nextpages = browser.find_elements_by_css_selector("a.TablePageLinkNext")
     if len(nextpages) > 0:
         pageclick=[nextpage for nextpage in nextpages if nextpage.is_displayed()]
-    if len(nextpages) <= 0:
+    else:
         sleep()
         browser.refresh
         sleep()
@@ -196,5 +196,5 @@ def next_page(browser):
             sleep()
             nextpages = browser.find_elements_by_css_selector("a.TablePageLinkNext")
             pageclick=[nextpage for nextpage in nextpages if nextpage.is_displayed()]
-    if len(nextpages) > 0:
+    if len(pageclick) > 0:
         pageclick[0].click()

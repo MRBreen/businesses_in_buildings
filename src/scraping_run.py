@@ -1,6 +1,7 @@
 from scraping_subroutine import get_fifty
 from scraping_subroutine import sleep
 from scraping_subroutine import next_page
+from scraping_subroutine import get_current_page
 import csv
 import sys
 import selenium
@@ -54,5 +55,11 @@ if __name__ == '__main__':
     for p in range(active_page):
         next_page(browser)
         sleep()
-    get_fifty(browser, street, active_page)
+    current_page, page_max = get_current_page(browser)
+    for i in range(current_page - active_page):
+        print "Pages to go: " , i
+        next_page(browser)
+        sleep()
+        current_page, page_max = get_current_page(broswer)
+    get_fifty(browser, street, current_page)
     print "closing successfully"
