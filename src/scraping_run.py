@@ -63,5 +63,6 @@ if __name__ == '__main__':
         next_page(browser)
         sleep()
         current_page, page_max = get_current_page(broswer)
+    print "current job: " , street, current_page
     get_fifty(browser, street, current_page)
     print "closing successfully"
