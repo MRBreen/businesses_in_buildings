@@ -186,13 +186,13 @@ def next_page(browser):
     nextpages = browser.find_elements_by_css_selector("a.TablePageLinkNext")
     if len(nextpages) > 0:
         [nextpage for nextpage in nextpages if nextpage.is_displayed()]
-    if len(nextpages) =< 0:
+    if len(nextpages) <= 0:
         sleep()
         browser.refresh
         sleep()
         nextpages = browser.find_elements_by_css_selector("a.TablePageLinkNext")
         nextpages = [nextpage for nextpage in nextpages if nextpage.is_displayed()]
-        if len(nextpages) =< 0:
+        if len(nextpages) <= 0:
             browser.execute_script("window.history.go(-1)")
             #browser.back()
             sleep()
