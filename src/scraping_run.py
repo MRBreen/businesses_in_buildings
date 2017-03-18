@@ -62,7 +62,7 @@ if __name__ == '__main__':
         sleep()
         current_page, page_max = get_current_page(browser)
     print "current job: " , street, current_page
-    if current_page = 0:
+    if current_page == 0:
         print "not getting browser responses. quit."
         quit()
     get_fifty(browser, street, current_page)
