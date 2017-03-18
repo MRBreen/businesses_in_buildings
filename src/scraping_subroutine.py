@@ -10,7 +10,7 @@ import boto3
 from bs4 import BeautifulSoup
 
 def sleep():
-    time.sleep(2.5+random.random()*1.5)
+    time.sleep(3.7+random.random()*2.5)
 
 # from http://programminghistorian.org/lessons/output-data-as-html-file
 def write_html(details, street, serial=0):

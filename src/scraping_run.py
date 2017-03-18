@@ -27,6 +27,8 @@ if __name__ == '__main__':
 
     street = sys.argv[1]
     active_page = int(sys.argv[2])
+    current_page = 0
+    page_max = 0
 
     #(last_street = b[0], last_page = b[1], last_record) = get_index()
 
