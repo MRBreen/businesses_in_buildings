@@ -25,7 +25,7 @@ if __name__ == '__main__':
 
     street = sys.argv[1]
     active_page = int(sys.argv[2])
-    current_page = 0
+    current_page = 1
     page_max = 0
 
     #(last_street = b[0], last_page = b[1], last_record) = get_index()
@@ -52,7 +52,7 @@ if __name__ == '__main__':
     #print "current page is" , current_page
     #print "max page is " , page_max
     #last_page = 0  # commenting out
-    for p in range(active_page):
+    for p in range(active_page-1):
         next_page(browser)
         sleep()
     current_page, page_max = get_current_page(browser)
