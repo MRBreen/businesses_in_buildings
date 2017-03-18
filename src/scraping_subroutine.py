@@ -11,7 +11,6 @@ import boto3
 def sleep():
     time.sleep(3.7+random.random()*2.5)
 
-# from http://programminghistorian.org/lessons/output-data-as-html-file
 def write_html(details, street, serial=0):
     '''Writes HTML to a file in the data folder
     '''
@@ -166,7 +165,6 @@ def get_fifty(browser, street, page):
             print "serial: ", serial
             #write_html(details, street, serial)
             write_to_s3(details, street, serial)
-            #write_to_s3_tracker(details, street, serial=0)
             browser.back()
             sleep()
             if on_lookup(browser) == False:
@@ -191,7 +189,6 @@ def next_page(browser):
         pageclick=[nextpage for nextpage in nextpages if nextpage.is_displayed()]
         if len(nextpages) <= 0:
             browser.execute_script("window.history.go(-1)")
-            #browser.back()
             sleep()
             nextpages = browser.find_elements_by_css_selector("a.TablePageLinkNext")
             pageclick=[nextpage for nextpage in nextpages if nextpage.is_displayed()]
