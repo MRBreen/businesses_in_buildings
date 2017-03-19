@@ -1,0 +1,33 @@
+pgrep phantomjs | xargs kill
+python src/scraping_run.py Alaskan 5
+pgrep phantomjs | xargs kill
+python src/scraping_run.py Boren 5
+pgrep phantomjs | xargs kill
+python src/scraping_run.py Boylston 5
+pgrep phantomjs | xargs kill
+python src/scraping_run.py Cherry 5
+pgrep phantomjs | xargs kill
+python src/scraping_run.py Columbia 5
+pgrep phantomjs | xargs kill
+python src/scraping_run.py Jackson 5
+pgrep phantomjs | xargs kill
+python src/scraping_run.py King 5
+pgrep phantomjs | xargs kill
+python src/scraping_run.py Madison 5
+pgrep phantomjs | xargs kill
+python src/scraping_run.py Main 5
+pgrep phantomjs | xargs kill
+python src/scraping_run.py Minor 5
+pgrep phantomjs | xargs kill
+python src/scraping_run.py Occidental 5
+pgrep phantomjs | xargs kill
+python src/scraping_run.py Spring 5
+pgrep phantomjs | xargs kill
+python src/scraping_run.py Terry 5
+pgrep phantomjs | xargs kill
+python src/scraping_run.py Washington 5
+pgrep phantomjs | xargs kill
+python src/scraping_run.py Western 5
+pgrep phantomjs | xargs kill
+python src/scraping_run.py Yesler 5
+pgrep phantomjs | xargs kill
