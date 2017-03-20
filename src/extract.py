@@ -4,12 +4,9 @@ from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError, CollectionInvalid
 import string
 import os
+import boto3
 
 
-#Define the MongoDB database and collection
-db_cilent = MongoClient()
-db = db_cilent['wa']
-collection = db.biz
 
 class extract(object):
     """object holds extracted values using BeautifulSoup
@@ -29,9 +26,8 @@ class extract(object):
         """creates the object and connects to folder
         """
         self.filename = filename
-        folder = ('../data/')
-        with open (folder+filename) as pagefile:
-            page_source = pagefile.read()
+        #with open (filename) as pagefile:
+        page_source = b.get(filename)['Body']
         self.soup = BeautifulSoup(page_source, 'html.parser')
 
     def get_buisiness_name(self):
@@ -119,11 +115,21 @@ if __name__ == '__main__':
     saves fields to records in mongoDB.
     collection name is defined at the top of the code.
     """
+    #Define the MongoDB database and collection
+    db_cilent = MongoClient()
+    db = db_cilent['wa']
+    collection = db.biz
+
+    s3 = boto3.resource('s3')
+    b = s3.Bucket('biz-in-buildings')
+    bo = b.objects
+    filenames = [b.key.encode('utf-8') for b in bo.iterator()]
+
     print "DB and collection is:" , collection.full_name
     print "Initial record count:" , collection.count()
-    for file in os.listdir('../data/'):
-        if '.html' in file:
+    #for file in os.listdir('../data/'):  #for local
+    for filename in filenames:
             extracted = extract()
-            extracted.build(file)
+            extracted.build(filename)
             extracted.db_add(collection)
     print "Final record count:" , collection.count()
