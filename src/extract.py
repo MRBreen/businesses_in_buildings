@@ -23,7 +23,7 @@ class extract(object):
         self.city = 'Seattle'
         self.zip_code = None
         self.entity = None
-        self.filename = filename
+        self.filename = None
 
     def create_soup(self, filename):
         """creates the object and connects to folder
@@ -111,7 +111,7 @@ class extract(object):
                 "City" : self.city,
                 "Zip" : self.zip_code,
                 "Entity" : self.entity,
-                "Filename" : self.fileneame
+                "Filename" : self.filename
             })
 
 if __name__ == '__main__':
