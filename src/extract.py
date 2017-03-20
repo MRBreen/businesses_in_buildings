@@ -23,10 +23,12 @@ class extract(object):
         self.city = 'Seattle'
         self.zip_code = None
         self.entity = None
+        self.filename = filename
 
     def create_soup(self, filename):
         """creates the object and connects to folder
         """
+        self.filename = filename
         folder = ('../data/')
         with open (folder+filename) as pagefile:
             page_source = pagefile.read()
@@ -107,7 +109,9 @@ class extract(object):
                 "Addr_mail" : self.address_mailing,
                 "UBI" : self.ubi,
                 "City" : self.city,
-                "Zip" : self.zip_code
+                "Zip" : self.zip_code,
+                "Entity" : self.entity,
+                "Filename" : self.fileneame
             })
 
 if __name__ == '__main__':
