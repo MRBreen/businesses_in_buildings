@@ -47,13 +47,13 @@ if __name__ == '__main__':
     collection = db.biz
 
     loops = 3
-    print len(sys.argv)
+    print "length of sys.argv is: " , len(sys.argv)
     if len(sys.argv) == 2:
-        loops = sys.argv[1]
+        loops = int(sys.argv[1])
 
     for i in range(loops):     #words = sys.argv[1]
-        browser = webdriver.Firefox()
-        #browser = webdriver.PhantomJS()
+        #browser = webdriver.Firefox()
+        browser = webdriver.PhantomJS()
         browser.get('http://bing.com/')
         sleep()
         searchbox = browser.find_element_by_class_name("b_searchbox")
