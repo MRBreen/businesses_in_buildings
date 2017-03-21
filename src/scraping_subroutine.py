@@ -238,8 +238,8 @@ def make_placeholder_files(streets, maxrecord):
         batch.append(s[0] + "_" + str(i+50) + ".ht"))
         return(batch)
 
-def get_placeholder_file():
+def get_processed_files():
     """gets next file from S3 Bucket
     """
     for obj in b.objects.all():
-    cloud_files.add(obj.key)
+        cloud_files.add(obj.key)

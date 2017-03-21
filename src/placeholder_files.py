@@ -38,5 +38,12 @@ if __name__ == '__main__':
     maxrecord = get_maxrecord(browser)
     placeholder_files = make_placeholder_files(streets,maxrecord)
 
-    get_specific(browser, street, page, item)
+    processed_files = get_processed_files()
+
+    queue = set(placeholder_files)-set(processed_files[0:-2])
+
+    for filename in queue:
+        filename = filename.decode('utf-8')
+        b.put_object(Key=filename)
+
     print "closing successfully"
