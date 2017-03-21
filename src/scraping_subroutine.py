@@ -111,18 +111,6 @@ def get_good_links(browser):
             links = get_lookup_link(browser)
     return links
 
-def write_index(street, page, i):
-    row = street + ',' + str(page) + ',' + str(i) + ','
-    with open('../data/records_index.csv','a') as myfile:
-        myfile.write(row)
-
-def get_index():
-    with open("records_index.csv", "rb") as myfile:
-        b = myfile.read()
-    b = b.split(',')
-    b = b[-4:-1]
-    return (b[0], b[1], b[2][:-2])
-
 def get_ubi(browser):
     '''Gets ubi for later validatation
     arg: browser
@@ -217,9 +205,7 @@ def get_specific(browser, street, page, item):
             details = browser.page_source
             serial = str(page*50 + i)
             print "serial: ", serial
-            #write_html(details, street, serial)
             write_to_s3(details, street, serial)
-            #write_to_s3_tracker(details, street, serial=0)
             browser.back()
             sleep()
             if on_lookup(browser) == False:
@@ -229,14 +215,15 @@ def get_specific(browser, street, page, item):
                 if on_lookup(browser) == False:
                     print "not on expected page, back"
                     browser.execute_script("window.history.go(-1)")
+            browser.quit()
 
 def make_placeholder_files(streets, maxrecord):
     """make stage file for rcords to be uploaded
     """
     for s in streets:
-    for i in range(int(maxrecord)):
-        batch.append(s[0] + "_" + str(i+50) + ".ht"))
-        return(batch)
+        for i in range(int(maxrecord)):
+            batch.append(s[0] + "_" + str(i+50) + ".ht")
+    return(batch)
 
 def get_processed_files():
     """gets next file from S3 Bucket
