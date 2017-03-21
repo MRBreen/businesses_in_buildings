@@ -23,7 +23,7 @@ def get_search_text(collection):
                                          "Joint Venture"] } ,
                             'status' : { "$nin" : ["1","2"] } } )
     search = (record['Bus Name'] + " " + record['Address'] + " " + record['City']).encode('utf-8')
-    db.biz.update_one({"_id" : record['_id']}, { '$set' : {'status' : 1}})
+    db.biz.update_many({'Bus Name' : record['Bus Name'], 'Address' : record['Address']}, { '$set' : {'status' : 1}})
     return (search, record)
 
 def write_html(details, filename):
