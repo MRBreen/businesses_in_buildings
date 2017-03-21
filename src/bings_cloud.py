@@ -11,7 +11,7 @@ import datetime
 import boto3
 
 def sleep():
-    time.sleep(3.7+random.random()*2.5)
+    time.sleep(13.3+random.random()*2)
 
 def get_search_text(collection):
     """gets search text from mongoDB biz collection and updates the record status to 1
@@ -21,7 +21,7 @@ def get_search_text(collection):
                                           "Limited Liability Company",
                                           "Professional Limited Liability Company",
                                          "Joint Venture"] } ,
-                            'status' : { "$nin" : ["1","2"] } } )
+                            'status' : { "$nin" : [ 1 , 2 ] } } )
     search = (record['Bus Name'] + " " + record['Address'] + " " + record['City']).encode('utf-8')
     db.biz.update_many({'Bus Name' : record['Bus Name'], 'Address' : record['Address']}, { '$set' : {'status' : 1}})
     return (search, record)
@@ -70,4 +70,6 @@ if __name__ == '__main__':
         db.biz.update_one({"_id" : record['_id']}, { '$set' : {'status' : 2}})
         browser.close()
         print "success" , filename
+        details = 0
+        filename = 0
     print "Done"
