@@ -27,11 +27,6 @@ def write_to_s3(details, street, serial):
     b = s3.Bucket('biz-in-buildings')
     b.put_object(Key=filename, Body=details)
 
-#def write_to_s3_tracker(street, page, i):
-#    row = street + ',' + str(page) + ',' + str(i) + ','
-#    with open('../data/records_index_s3.csv','a') as myfile:
-#        myfile.write(row)
-
 def get_maxrecord(browser):
     """Gets total records
     """
@@ -40,8 +35,9 @@ def get_maxrecord(browser):
     total_record = total_records[0]
     recordtext = total_record.text.encode('utf-8')
     recordtext = recordtext.encode('utf-8')
-    _text, recordmax = recordtext.strip().split("of")
-    return recordmax
+    _text, maxrecord = recordtext.strip().split("of")
+    maxrecord = maxrecord.strip().replace('"','')
+    return maxrecord
 
 def get_current_page(browser):
     """Gets current page number the records table.
@@ -234,10 +230,16 @@ def get_specific(browser, street, page, item):
                     print "not on expected page, back"
                     browser.execute_script("window.history.go(-1)")
 
-def make_sage_file(streets):
+def make_placeholder_files(streets, maxrecord):
     """make stage file for rcords to be uploaded
     """
     for s in streets:
-    for i in range(int(s[2].replace('"',''))):
+    for i in range(int(maxrecord)):
         batch.append(s[0] + "_" + str(i+50) + ".ht"))
         return(batch)
+
+def get_placeholder_file():
+    """gets next file from S3 Bucket
+    """
+    for obj in b.objects.all():
+    cloud_files.add(obj.key)
