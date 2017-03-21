@@ -233,3 +233,11 @@ def get_specific(browser, street, page, item):
                 if on_lookup(browser) == False:
                     print "not on expected page, back"
                     browser.execute_script("window.history.go(-1)")
+
+def make_sage_file(streets):
+    """make stage file for rcords to be uploaded
+    """
+    for s in streets:
+    for i in range(int(s[2].replace('"',''))):
+        batch.append(s[0] + "_" + str(i+50) + ".ht"))
+        return(batch)
