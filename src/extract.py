@@ -128,8 +128,8 @@ if __name__ == '__main__':
     print "DB and collection is:" , collection.full_name
     print "Initial record count:" , collection.count()
     #for file in os.listdir('../data/'):  #for local
-    for filename in filenames:
+    for filenom in filenames:
             extracted = extract()
-            extracted.build(filename)
+            extracted.build(filenom)
             extracted.db_add(collection)
     print "Final record count:" , collection.count()
