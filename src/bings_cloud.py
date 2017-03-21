@@ -11,7 +11,7 @@ import datetime
 import boto3
 
 def sleep():
-    time.sleep(13.3+random.random()*2)
+    time.sleep(4.3+random.random()*15)
 
 def get_search_text(collection):
     """gets search text from mongoDB biz collection and updates the record status to 1
@@ -70,6 +70,4 @@ if __name__ == '__main__':
         db.biz.update_one({"_id" : record['_id']}, { '$set' : {'status' : 2}})
         browser.close()
         print "success" , filename
-        details = 0
-        filename = 0
     print "Done"
