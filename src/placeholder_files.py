@@ -14,6 +14,14 @@ import string
 
 if __name__ == '__main__':
     #browser = webdriver.Firefox()
+    """creates placeholder files from a cvs and and puts them
+    on the s3 bucket
+    """
+    #with open('data/streets1.csv', 'rb') as f:
+    with open(sys.arvg[1], 'rb') as f:
+        reader = csv.reader(f)
+        streets = list(reader)
+
     browser = webdriver.PhantomJS()
     browser.get('http://bls.dor.wa.gov/')
     sleep()
@@ -41,9 +49,11 @@ if __name__ == '__main__':
     processed_files = get_processed_files()
 
     queue = set(placeholder_files)-set(processed_files[0:-2])
-
-    for filename in queue:
-        filename = filename.decode('utf-8')
-        b.put_object(Key=filename)
+    print "place holder ",  len(placeholder_files)
+    print "processed_files", len(processed_files)
+    print "the queue is ", len(queue)
+    #for filename in queue:
+    #    filename = filename.decode('utf-8')
+    #    b.put_object(Key=filename)
 
     print "closing successfully"
