@@ -22,12 +22,12 @@ class extract(object):
         self.entity = None
         self.filename = None
 
-    def create_soup(self, filename):
+    def create_soup(self, filenom):
         """creates the object and connects to folder
         """
-        self.filename = filename
+        self.filename = filenom
         #with open (filename) as pagefile:
-        page_source = b.get(filename)['Body']
+        page_source = b.get(filenom)['Body']
         self.soup = BeautifulSoup(page_source, 'html.parser')
 
     def get_buisiness_name(self):
@@ -86,11 +86,11 @@ class extract(object):
         else:
             self.entity=""
 
-    def build(self, filename):
+    def build(self, filenom):
         """Calls subfunction which create values for the parameters
         arg: filename is html file to be extracted
         """
-        self.create_soup(filename)
+        self.create_soup(filenom)
         self.get_buisiness_name()
         self.get_address_one()
         self.get_address_mailing()
@@ -128,8 +128,8 @@ if __name__ == '__main__':
     print "DB and collection is:" , collection.full_name
     print "Initial record count:" , collection.count()
     #for file in os.listdir('../data/'):  #for local
-    extracted = extract()
     for filenom in filenames:
+        extracted = extract()
         extracted.build(filenom)
         extracted.db_add(collection)
     print "Final record count:" , collection.count()
