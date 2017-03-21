@@ -202,8 +202,6 @@ def next_page(browser):
         nextpages[0].click()
 
 
-
-
 if __name__ == '__main__':
     #browser = webdriver.Firefox()
     browser = webdriver.PhantomJS()
