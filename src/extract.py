@@ -1,12 +1,10 @@
 from bs4 import BeautifulSoup
-#import json
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError, CollectionInvalid
 import string
 import os
 import boto3
-
-
+import botocore
 
 class extract(object):
     """object holds extracted values using BeautifulSoup
@@ -22,12 +20,12 @@ class extract(object):
         self.entity = None
         self.filename = None
 
-    def create_soup(self, filenom):
+    def create_soup(self, key):
         """creates the object and connects to folder
         """
-        self.filename = filenom
+        self.filename = key.key
         #with open (filename) as pagefile:
-        page_source = b.get(filenom)['Body']
+        page_source = key.get(self.filename)['Body']
         self.soup = BeautifulSoup(page_source, 'html.parser')
 
     def get_buisiness_name(self):
@@ -122,14 +120,17 @@ if __name__ == '__main__':
 
     s3 = boto3.resource('s3')
     b = s3.Bucket('biz-in-buildings')
-    bo = b.objects
-    filenames = [b.key.encode('utf-8') for b in bo.iterator()]
+    #bo = b.objects
+
+    filenames = [key.key for key in b.objects.all()]
+    #filenames = [b.key.encode('utf-8') for b in bo.iterator()]
 
     print "DB and collection is:" , collection.full_name
     print "Initial record count:" , collection.count()
     #for file in os.listdir('../data/'):  #for local
-    for filenom in filenames:
+
+    for key in b.objects.all():
         extracted = extract()
-        extracted.build(filenom)
+        extracted.build(key)
         extracted.db_add(collection)
     print "Final record count:" , collection.count()
