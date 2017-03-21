@@ -194,3 +194,42 @@ def next_page(browser):
             pageclick=[nextpage for nextpage in nextpages if nextpage.is_displayed()]
     if len(pageclick) > 0:
         pageclick[0].click()
+
+def decompose_filename(filename):
+    """decomposes filename into street, p, i
+    """
+    a = filename.split('.html')
+    a[0].split('_')[0]
+    street = a[0].split('_')[0]
+    number = int(a[0].split('_')[1])
+    p = number//50 -1
+    i = number%50
+    return (street, p , i)
+
+def get_specific(browser, street, page, item):
+    """Scrapes up to 50 pages and saves as html files
+    """
+    for i in range(item,50):
+        sleep()
+        links = get_good_links(browser)
+        print "length of links" , len(links)
+        print "i = " , i
+        if i < len(links):
+            sleep()
+            links[i].click()
+            sleep()
+            details = browser.page_source
+            serial = str(page*50 + i)
+            print "serial: ", serial
+            #write_html(details, street, serial)
+            write_to_s3(details, street, serial)
+            #write_to_s3_tracker(details, street, serial=0)
+            browser.back()
+            sleep()
+            if on_lookup(browser) == False:
+                print "not on expected page, refresh"
+                browser.refresh()
+                sleep()
+                if on_lookup(browser) == False:
+                    print "not on expected page, back"
+                    browser.execute_script("window.history.go(-1)")
