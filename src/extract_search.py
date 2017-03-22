@@ -27,29 +27,25 @@ class bing_data(object):
     def get_namesearch(self):
         """ gets the search term which begins with the name
         """
-        r = self.soup.find(id = "sb_form_q")['value'].encode('utf-8')
-        print r .text
-        if len(r)>0:
-            self.num_results = r.split(" results")[0].replace(',','').encode('utf-8')
+        self.namesearch = self.soup.find(id = "sb_form_q")['value'].encode('utf-8')
+
 
     def get_num_results(self):
         """ gets the number of results
         """
-        r = self.soup.find('span',{'class':'sb_count'})
-        print r .text
-
+        r = self.soup.find('span',{'class':'sb_count'}).contents
         if len(r)>0:
-            self.num_results = r.split(" results")[0].replace(',','').encode('utf-8')
+            self.num_results = r[0].split(" results")[0].replace(',','').encode('utf-8')
+            #self.num_results = r.split(" results")[0].replace(',','').encode('utf-8')
 
     def get_links(self):
         """ gets links
         """
         linka = self.soup.find_all('div', 'b_attribution')
-        linkb = [i.text.split()[0] for i in linka]
+        linkb = [i.get_text().encode('utf-8') for i in linka]
         links = []
-        for i, link in enumerate(linkb[:-1]):
-            if link.encode('utf-8') != 'Ad':
-                v = link.encode('utf-8')
+        for i, link in enumerate(linkb):  #may need to shorten to end at -1
+            if link != 'Ad':
                 if v[0:8] == 'https://':
                     v = v[8:]
                 if v[0:7] == 'http://':
@@ -61,12 +57,10 @@ class bing_data(object):
         """ gets text
         """
         data = self.soup.findAll('p')
-        texta = [b.get_text() for b in data]
-        textb = [t.encode('utf-8') for t in texta]
+        texta = [b.get_text().encode('utf-8') for b in data]
         text=[]
-        for i, textc in enumerate(textb[:-1]):
-            if textc.encode('utf-8') != 'Ad':
-                v = textc.encode('utf-8')
+        for i, textc in enumerate(textb):
+            if textc != 'Ad':
                 text.append([i,v])
         self.text = text
 
