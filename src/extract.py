@@ -132,5 +132,9 @@ if __name__ == '__main__':
     for key in b.objects.all():
         extracted = extract()
         extracted.build(key)
-        extracted.db_add(collection)
+        if db.biz.find( { "Filename" : key.key} ).count() < 1:
+            print "match" , key.key
+            #extracted.db_add(collection)
+        else:
+            print "not a match" , key.key
     print "Final record count:" , collection.count()
