@@ -133,8 +133,5 @@ if __name__ == '__main__':
         extracted = extract()
         extracted.build(key)
         if db.biz.find( { "Filename" : key.key} ).count() < 1:
-            print "match" , key.key
-            #extracted.db_add(collection)
-        else:
-            print "not a match" , key.key
+            extracted.db_add(collection)
     print "Final record count:" , collection.count()
