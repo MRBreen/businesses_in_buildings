@@ -18,15 +18,25 @@ def read_mongo(db, collection, query={}, host='localhost', port=27017, username=
 
     return df
 
+def clean_df(df):
+    """ cleans up df for all models
+    """
+    df = df.dropna()
+    df.reset_index()
+    return df
+
 def get_link_array(df):
     """ returns an array of links from a dataframe
     """
-    list_array = np.array(df[['Links']]).tolist()
-    df_links = pd.DataFrame()
-    #for r in range(df.shape[0]):
+    df = df[['Links']]
+    slinks = pd.Series()
     list_links = []
-    links = ""
-
-    for i in range(5):
-        link = list_array[7][0][i*2][1]
-        links += link + " "
+    for index, row in df.iterrows():
+        list_links = []
+        links = ""
+        for i in range(10):
+            link = row[0][0][1]
+            links += link + " "
+        slink = pd.Series(links)
+        slinks = slinks.append(slink)
+    return slinks
