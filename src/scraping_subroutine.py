@@ -61,17 +61,20 @@ def on_lookup(browser):
     if len(num_pages_raw) > 2:
         return True
 
-def street_scrape(street):
-    '''Scrapes data from street
+def search_street(street):
+    '''initial search by from street
     '''
     sleep()
     street_field = browser.find_element_by_name("c-f1")
     city_field = browser.find_element_by_name("c-i1")
+    street_field.clear()
+    city_field.clear()
     street_field.send_keys(street)
     city_field.send_keys("Seattle")
     search_button = browser.find_element_by_id("c-84")
     sleep()
     search_button.click()
+    sleep()
 
 def get_lookup_link(browser):
     """Returns list of links...not very robust
