@@ -61,7 +61,7 @@ def on_lookup(browser):
     if len(num_pages_raw) > 2:
         return True
 
-def search_street(street):
+def search_street(browser, street):
     '''initial search by from street
     '''
     sleep()
