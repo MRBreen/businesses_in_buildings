@@ -7,25 +7,33 @@ import boto3
 import botocore
 
 class bing_data(object):
-    """Holds extracted values
+    """holds extracted values
     """
     def __init__(self):
         self.soup = None
-        self.name = None
+        self.namesearch = None
         self.num_results = None
         self.links = None
         self.text = None
 
     def create_soup(self, key):
-        """creates the object and connects to folder
+        """ creates the object and connects to folder
         """
         self.filename = key.key
         #with open (filename) as pagefile:
         page_source = key.get(self.filename)['Body']
         self.soup = BeautifulSoup(page_source, 'html.parser')
 
+    def get_namesearch(self):
+        """ gets the search term which begins with the name
+        """
+        r = self.soup.find(id = "sb_form_q")['value'].encode('utf-8')
+        print r .text
+        if len(r)>0:
+            self.num_results = r.split(" results")[0].replace(',','').encode('utf-8')
+
     def get_num_results(self):
-        """ Gets the number of results
+        """ gets the number of results
         """
         r = self.soup.find('span',{'class':'sb_count'})
         print r .text
@@ -34,7 +42,7 @@ class bing_data(object):
             self.num_results = r.split(" results")[0].replace(',','').encode('utf-8')
 
     def get_links(self):
-        """get links
+        """ gets links
         """
         linka = self.soup.find_all('div', 'b_attribution')
         linkb = [i.text.split()[0] for i in linka]
@@ -50,7 +58,7 @@ class bing_data(object):
         self.links = links
 
     def get_text(self):
-        """get text
+        """ gets text
         """
         data = self.soup.findAll('p')
         texta = [b.get_text() for b in data]
@@ -73,7 +81,7 @@ class bing_data(object):
 
     def db_add(self, collection):
         collection.insert_one({
-            "Bus Name" : self.name,
+            "Bus Search" : self.namesearch,
             "Results" : self.num_results,
             "Links" : self.links,
             "Text" : self.text
@@ -103,5 +111,6 @@ if __name__ == '__main__':
     for key in b.objects.all():
         extracted = bing_data()
         extracted.build(key)
-        extracted.db_add(collection)
+        if db.biz.find( { "Filename" : key.key} ).count() < 1:
+            extracted.db_add(collection)
     print "Final record count:" , collection.count()
