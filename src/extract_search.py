@@ -6,8 +6,8 @@ import os
 import boto3
 import botocore
 
-class bing_data(object):
-    """holds extracted values
+class BingData(object):
+    """ holds extracted values
     """
     def __init__(self):
         self.soup = None
@@ -15,6 +15,7 @@ class bing_data(object):
         self.num_results = None
         self.links = None
         self.text = None
+        self.filename = None
 
     def create_soup(self, key):
         """ creates the object and connects to folder
@@ -33,7 +34,10 @@ class bing_data(object):
     def get_num_results(self):
         """ gets the number of results
         """
-        r = self.soup.find('span',{'class':'sb_count'}).contents
+        ra = self.soup.find('span',{'class':'sb_count'})
+        if ra is None:
+            return
+        r = ra.contents
         if len(r)>0:
             self.num_results = r[0].split(" results")[0].replace(',','').encode('utf-8')
             #self.num_results = r.split(" results")[0].replace(',','').encode('utf-8')
@@ -42,44 +46,52 @@ class bing_data(object):
         """ gets links
         """
         linka = self.soup.find_all('div', 'b_attribution')
+        if linka is None:
+            return
         linkb = [i.get_text().encode('utf-8') for i in linka]
         links = []
         for i, link in enumerate(linkb):  #may need to shorten to end at -1
             if link != 'Ad':
-                if v[0:8] == 'https://':
-                    v = v[8:]
-                if v[0:7] == 'http://':
-                    v = v[7:]
-                links.append([i,v])
+                if link[0:8] == 'https://':
+                    link = link[8:]
+                if link[0:7] == 'http://':
+                    link = link[7:]
+                links.append([i,link])
         self.links = links
 
     def get_text(self):
         """ gets text
         """
-        data = self.soup.findAll('p')
-        texta = [b.get_text().encode('utf-8') for b in data]
+        texta = self.soup.findAll('p')
+        if texta is None:
+            return
+        textb = [b.get_text().encode('utf-8') for b in texta]
         text=[]
         for i, textc in enumerate(textb):
             if textc != 'Ad':
-                text.append([i,v])
+                text.append([i,textc])
         self.text = text
 
     def build(self, filename):
-        """Calls subfunction which create values for the parameters
+        """ calls subfunction which create values for the parameters
         arg: filename is html file to be extracted
         """
         self.create_soup(filename)
+        self.get_namesearch()
         self.get_num_results()
         self.get_links()
         self.get_text()
 
     def db_add(self, collection):
+        """ adds file to db
+        """
         collection.insert_one({
             "Bus Search" : self.namesearch,
             "Results" : self.num_results,
             "Links" : self.links,
             "Text" : self.text
         })
+
 
 
 if __name__ == '__main__':
@@ -103,7 +115,7 @@ if __name__ == '__main__':
     #for file in os.listdir('../data/'):  #for local
 
     for key in b.objects.all():
-        extracted = bing_data()
+        extracted = BingData()
         extracted.build(key)
         if db.biz.find( { "Filename" : key.key} ).count() < 1:
             extracted.db_add(collection)
