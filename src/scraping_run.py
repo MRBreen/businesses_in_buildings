@@ -12,6 +12,9 @@ import time
 import random
 import string
 
+def sleep():
+    time.sleep(5.1+random.random()*2.5)
+
 if __name__ == '__main__':
     """scrapes based on street name and page number.  An example call:
     python scraping_run.py Jackson 4 7
