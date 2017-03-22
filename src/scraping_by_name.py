@@ -12,7 +12,13 @@ import time
 import random
 import string
 
+def sleep():
+    time.sleep(5.1+random.random()*2.5)
+
 if __name__ == '__main__':
+    """scrapes by usesing a filename after calling this program
+    street_serial.html
+    """
     #browser = webdriver.Firefox()
     browser = webdriver.PhantomJS()
     browser.get('http://bls.dor.wa.gov/')
@@ -43,12 +49,6 @@ if __name__ == '__main__':
     search_button.click()
     sleep()
 
-    #recordmax = get_maxrecord(browser)
-    #print "total records for street:" , recordmax
-    #current_page, page_max = get_current_page(browser)
-    #print "current page is" , current_page
-    #print "max page is " , page_max
-    #last_page = 0  # commenting out
     for p in range(active_page-1):
         next_page(browser)
         sleep()
