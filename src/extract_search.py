@@ -43,34 +43,35 @@ class BingData(object):
             #self.num_results = r.split(" results")[0].replace(',','').encode('utf-8')
 
     def get_links(self):
-        """ gets links
+        """ gets links and text - weaving together to weed out ads
         """
         linka = self.soup.find_all('div', 'b_attribution')
         if linka is None:
             return
         linkb = [i.get_text().encode('utf-8') for i in linka]
         links = []
+        texta = self.soup.find_all('div', 'b_attribution')
+        text = []
         for i, link in enumerate(linkb):  #may need to shorten to end at -1
-            if link != 'Ad':
+            if link[0:4] != 'Ad ·':
                 if link[0:8] == 'https://':
                     link = link[8:]
                 if link[0:7] == 'http://':
                     link = link[7:]
                 links.append([i,link])
+                links.append([i, text])
         self.links = links
+        self.text = text
 
-    def get_text(self):
-        """ gets text
+    """def get_text(self):
+        """ #gets text
         """
         texta = self.soup.findAll('p')
         if texta is None:
             return
-        textb = [b.get_text().encode('utf-8') for b in texta]
-        text=[]
-        for i, textc in enumerate(textb):
-            if textc != 'Ad':
-                text.append([i,textc])
+        text = [i.get_text().encode('utf-8') for i in texta]
         self.text = text
+    """
 
     def build(self, filename):
         """ calls subfunction which create values for the parameters
@@ -80,7 +81,6 @@ class BingData(object):
         self.get_namesearch()
         self.get_num_results()
         self.get_links()
-        self.get_text()
 
     def db_add(self, collection):
         """ adds file to db
