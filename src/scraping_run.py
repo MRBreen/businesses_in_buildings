@@ -20,8 +20,8 @@ if __name__ == '__main__':
     python scraping_run.py Jackson 4 7
     """
 
-    browser = webdriver.Firefox()
-    #browser = webdriver.PhantomJS()
+    #browser = webdriver.Firefox()
+    browser = webdriver.PhantomJS()
     browser.get('http://bls.dor.wa.gov/')
     sleep()
     blink = browser.find_element_by_link_text('Business licenses')
