@@ -21,9 +21,12 @@ def read_mongo(db, collection, query={}, host='localhost', port=27017, username=
 def get_link_array(df):
     """ returns an array of links from a dataframe
     """
-    df = dfbing[['Links']]
-    newlist = data.tolist()
-    links = [newlist[0][0][i][1].encode('utf-8') for i in range(len(newlist[0][0]))]
-    return (np.array(links))
+    list_array = np.array(df[['Links']]).tolist()
+    df_links = pd.DataFrame()
+    #for r in range(df.shape[0]):
+    list_links = []
+    links = ""
 
-    
+    for i in range(5):
+        link = list_array[7][0][i*2][1]
+        links += link + " "
