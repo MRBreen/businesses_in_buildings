@@ -46,9 +46,11 @@ def get_current_page(browser):
     if type(num_pages_raw) != None:
         num_pages_raw = [num_pages_r for num_pages_r in num_pages_raw if num_pages_r.text]
     if len(num_pages_raw) > 0:
-        num_pages = num_pages_raw[2]
-        num_pages = num_pages.text.encode('utf-8')
+        num_pages = num_pages_raw[2].strip().replace('"','')
+        num_pages = num_pages.text.encode('utf-8').strip().replace('"','')
         current_page, page_max = num_pages.strip().split("of")
+        current_page = current_page.strip().replace('"','')
+        page_max = page_max.strip().replace('"','')
         return int(current_page), int(page_max)
     else:
         return 0, 0
