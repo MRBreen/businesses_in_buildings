@@ -46,7 +46,7 @@ if __name__ == '__main__':
     db = db_cilent['wa']
     collection = db.biz
 
-    loops = 3
+    loops = 10000
     print "length of sys.argv is: " , len(sys.argv)
     if len(sys.argv) == 2:
         loops = int(sys.argv[1])
