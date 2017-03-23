@@ -72,8 +72,8 @@ class Tfid_describe(object):
         raw_data_df = pd.read_json(datafile)
         raw_data_df['description'].fillna(0, inplace=True)
 
-        fraud_list = ['fraudster', 'fraudster_event']
-        fraud = (raw_data_df.acct_type.isin(fraud_list)).astype(int)
+        data = ['Interest', 'fraudster_event']
+        data = (raw_data_df.acct_type.isin(data_list)).astype(int)
 
         return raw_data_df, fraud
 
