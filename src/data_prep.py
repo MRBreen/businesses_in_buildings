@@ -3,14 +3,14 @@ from pymongo import MongoClient
 import numpy as np
 import pandas as pd
 
-def read_mongo(db, collection, query={}, host='localhost', port=27017, username=None, password=None, no_id=True):
+def read_mongo(db, collection, max=0, query={}, host='localhost', port=27017, username=None, password=None, no_id=True):
     """ read from Mongo and Store into DataFrame
     """
     client = MongoClient()
     client = MongoClient('mongodb://localhost:27017/')
     db = client[db]
 
-    cursor = db[collection].find(query)
+    cursor = db[collection].find(query).limit(max)
     df =  pd.DataFrame(list(cursor))
 
     if no_id:
@@ -22,7 +22,6 @@ def clean_df(df):
     """ cleans up df for all models
     """
     df = df.dropna()
-    df.reset_index()
     return df
 
 def get_array_from_list(df):
