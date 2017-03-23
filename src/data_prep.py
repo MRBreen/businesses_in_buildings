@@ -25,10 +25,13 @@ def clean_df(df):
     df.reset_index()
     return df
 
-def get_link_array(df):
+def get_array_from_list(df):
     """ returns an array of links from a dataframe
+        works for links and text as well
+        parameters:
+        df - dataframe
+        col should be either 'Text' or 'Link'
     """
-    df = df[['Links']]
     slinks = pd.Series()
     list_links = []
     for index, row in df.iterrows():
