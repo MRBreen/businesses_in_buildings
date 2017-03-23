@@ -1,7 +1,7 @@
 import pymongo
 from pymongo import MongoClient
 import numpy as np
-import pandas as
+import pandas as pd
 
 def read_mongo(db, collection, query={}, host='localhost', port=27017, username=None, password=None, no_id=True):
     """ read from Mongo and Store into DataFrame
