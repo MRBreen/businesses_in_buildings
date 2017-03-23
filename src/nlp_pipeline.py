@@ -14,6 +14,9 @@ from nltk.stem.snowball import SnowballStemmer
 from nltk.util import ngrams
 from nltk import pos_tag
 from nltk import RegexpParser
+import string
+
+
 
 
 
@@ -56,13 +59,13 @@ def extract_bow_from_raw_text(text_as_string):
         for subtree in tree.subtrees():
             if subtree.label() == 'SENT':
                 stemmer_porter = PorterStemmer()
-                tokens_stemporter = [list(map(stemmer_porter.stem, sent)) for sent in tokens_filtered]
-
+                tokens_stemporter = [list(map(stemmer_porter.stem, sent)) for sent in sent_tokens]
+                # tokens_filtered???  =  sent_tokens ????
                 #t_tokenlist = [tpos[0].lower() for tpos in subtree.leaves()]
                 #t_tokens_stemsnowball = list(map(stemmer_snowball.stem, t_tokenlist))
                 #t_token = "-".join(t_tokens_stemsnowball)
                 #ret_tokens.append(t_token)
-                ret_tokens.extend(t_tokens_stemporter)
+                ret_tokens.extend(tokens_stemporter)
             #if subtree.label() == 'V2V': print(subtree)
     #tokens_lower = [map(string.lower, sent) for sent in tokens]
 
