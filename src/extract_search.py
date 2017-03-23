@@ -61,7 +61,7 @@ class BingData(object):
                         link = link[7:]
                     links.append([i,link])
                     if len(texta) > i :
-                        text.append([i, texta[i].get_text().encode('utf-8')])
+                        text.append([i, texta[i].get_text().encode('utf-8') ])
         self.links = links
         self.text = text
 
