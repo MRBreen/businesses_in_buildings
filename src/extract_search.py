@@ -50,22 +50,24 @@ class BingData(object):
             return
         linkb = [i.get_text().encode('utf-8') for i in linka]
         links = []
-        texta = self.soup.find_all('div', 'b_attribution')
+        texta = self.soup.find_all('p')
         text = []
         for i, link in enumerate(linkb):  #may need to shorten to end at -1
-            if link[0:4] != 'Ad ·':
-                if link[0:8] == 'https://':
-                    link = link[8:]
-                if link[0:7] == 'http://':
-                    link = link[7:]
-                links.append([i,link])
-                links.append([i, text])
+            if i < 10:
+                if link[0:4] != 'Ad ':
+                    if link[0:8] == 'https://':
+                        link = link[8:]
+                    if link[0:7] == 'http://':
+                        link = link[7:]
+                    links.append([i,link])
+                    if len(texta) > i :
+                        text.append([i, texta[i].get_text().encode('utf-8')])
         self.links = links
         self.text = text
 
     """def get_text(self):
-        """ #gets text
-        """
+         #gets text
+
         texta = self.soup.findAll('p')
         if texta is None:
             return
@@ -114,9 +116,13 @@ if __name__ == '__main__':
     print "Initial record count:" , collection.count()
     #for file in os.listdir('../data/'):  #for local
 
+    i = 0
     for key in b.objects.all():
+        i+=1
         extracted = BingData()
         extracted.build(key)
         if db.biz.find( { "Filename" : key.key} ).count() < 1:
             extracted.db_add(collection)
+        if i%1000 == 0:
+            print "htmls files read:" , i
     print "Final record count:" , collection.count()
