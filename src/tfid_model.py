@@ -102,7 +102,7 @@ def optimize(self, y, steps=1000):
         low = y_predict[:,1].max()
 
         con_mat = np.zeros((steps, 4))
-        print "total real fraud: " , np.sum(y)
+        print "total in business: " , np.sum(y)
         print "total data: " , y.shape
         print "percent of fraud in data: " , np.sum(y)*1.0/y.shape[0]
         for i, thresh in enumerate(np.linspace(np.median(y_predict[:,1]), high, steps)):
@@ -117,7 +117,7 @@ def optimize(self, y, steps=1000):
 
 
 if __name__=='__main__':
-    datafile = '../data/bizmarch.json'
+    #datafile = '../data/bizmarch.json'
     #myko = MykoModel(GradientBoostingClassifier())
     #X,y = myko.get_data(datafile)
     #X_train, X_test, y_train, y_test = train_test_split(X,y)

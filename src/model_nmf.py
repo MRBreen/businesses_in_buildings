@@ -1,4 +1,5 @@
-import cpickle as pickle
+
+import cPickle as pickle
 import csv
 import pandas as pd
 import numpy as np
@@ -6,7 +7,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.decomposition import NMF
 
 def reconst_mse(target, left, right):
-    return (array(target - left.dot(right))**2).mean()
+    return (np.array(target - left.dot(right))**2).mean()
 
 def describe_nmf_results(document_term_mat, W, H, n_top_words = 15):
     print("Reconstruction error: %f") %(reconst_mse(document_term_mat, W, H))
@@ -28,8 +29,9 @@ def my_nmf(document_term_mat, n_components=15, n_iterations=50, eps=1e-6):
     return array(W), array(H)
 
 if __name__ == "__main__":
-    n_features = 500
-    n_topics = 6
+    #n_features = 4000
+    #for i in range(15):
+    #    n_topics = 5
 
     filename = 'thurs_1940.pkl'
     with open(filename) as f_un:
@@ -43,6 +45,9 @@ if __name__ == "__main__":
 
     doc_bodies = [i.replace('\n', "") for i in doc_bodies]
 
+    n_features = 7000
+    for i in range(15):
+        n_topics = i  #5
     #vectorizer = CountVectorizer(max_features=n_features)
     vectorizer = TfidfVectorizer(max_features=n_features, stop_words='english')
     document_term_mat = vectorizer.fit_transform(doc_bodies)
