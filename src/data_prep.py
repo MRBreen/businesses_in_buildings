@@ -33,7 +33,7 @@ def clean_df(df):
     return df
 
 def remove_non_ascii(text):
-    CHARSET = set(string.lowercase + string.digits + string.uppercase + string.whitespace + '.')
+    CHARSET = set(string.lowercase + string.uppercase + string.whitespace + '.')
     return ''.join(c for c in text if c in CHARSET)
 
 """    line
@@ -44,6 +44,29 @@ def remove_non_ascii(text):
             d =
         line = .join(d)
     return line"""
+
+
+def clean_links(ser):
+    """
+    """
+    links = [(v[0][0][1]) for v in ser.values]
+    #links = [v.split("w.")[1].split('.')[0] for v in links if v.split("w.")[1].split('.')[0]]
+    #links = [v.split("Ad ")[1].split('.')[0] for v in links]
+    links = [remove_non_ascii(x) for x in links]
+    y = []
+    for link in links:
+        x = link.split("w.")
+        if len(x) > 1:
+            core = x[1]
+        else:
+            core = x[0]
+        y.append(core)
+
+    y = []
+    for link in links:
+        if "." in link:
+            y.append(x[0])
+    return links
 
 def tokenize_and_normalize(chunks):
     """Returns stripped down words
