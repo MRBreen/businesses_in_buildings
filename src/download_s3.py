@@ -14,5 +14,5 @@ if __name__ == '__main__':
 
   for filename in b.objects.all():
       #if db.biz.find( { "Filename" : key.key} ).count() < 1:
-      write_to_s3(details, filename)
+      b.put_object(Key=filename, Body=details)
       print "downloading file from S3:" , filename
