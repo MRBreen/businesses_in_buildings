@@ -49,24 +49,23 @@ def remove_non_ascii(text):
 def clean_links(ser):
     """
     """
-    links = [(v[0][0][1]) for v in ser.values]
-    #links = [v.split("w.")[1].split('.')[0] for v in links if v.split("w.")[1].split('.')[0]]
-    #links = [v.split("Ad ")[1].split('.')[0] for v in links]
-    links = [remove_non_ascii(x) for x in links]
-    y = []
-    for link in links:
-        x = link.split("w.")
-        if len(x) > 1:
-            core = x[1]
-        else:
-            core = x[0]
-        y.append(core)
+    for i in range(1):
+        links = [(v[0][i][1]) for v in ser.values]
 
-    y = []
-    for link in links:
-        if "." in link:
-            y.append(x[0])
-    return links
+        links = [remove_non_ascii(x) for x in links]
+        y = []
+        x = []
+        for link in links:
+            x = link.split("w.")
+            if len(x) > 1:
+                core = x[1]
+            else:
+                core = x[0]
+
+            if '.' in link:
+                core = core.split(".")[0]
+            y.append(core)
+    return y
 
 def tokenize_and_normalize(chunks):
     """Returns stripped down words
