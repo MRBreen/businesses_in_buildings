@@ -12,9 +12,7 @@ if __name__ == '__main__':
   print "files to download:" , filenames
   #for file in os.listdir('../data/'):  #for local
 
-  for key in b.objects.all():
-      extracted = extract()
-      extracted.build(key)
+  for filename in b.objects.all():
       #if db.biz.find( { "Filename" : key.key} ).count() < 1:
       write_to_s3(details, filename)
-      print "downloading file from S3:" , collection.count()
+      print "downloading file from S3:" , filename
