@@ -2,6 +2,15 @@ import pymongo
 from pymongo import MongoClient
 import numpy as np
 import pandas as pd
+import unicodedata
+import string
+
+from nltk.tokenize import word_tokenize, sent_tokenize
+from nltk.corpus import stopwords
+
+from gensim import corpora, models, similarities
+
+from string import punctuation
 
 def read_mongo(db, collection, max=0, query={}, host='localhost', port=27017, username=None, password=None, no_id=True):
     """ read from Mongo and Store into DataFrame
@@ -15,7 +24,6 @@ def read_mongo(db, collection, max=0, query={}, host='localhost', port=27017, us
 
     if no_id:
         del df['_id']
-
     return df
 
 def clean_df(df):
@@ -24,21 +32,23 @@ def clean_df(df):
     df = df.dropna()
     return df
 
-def get_array_from_list(df):
-    """ returns an array of links from a dataframe
-        works for links and text as well
-        parameters:
-        df - dataframe
-        col should be either 'Text' or 'Link'
+def remove_non_ascii(text):
+    CHARSET = set(string.lowercase + string.digits + string.uppercase + string.whitespace)
+    return ''.join(c for c in text if c in CHARSET)
+
+def tokenize_and_normalize(chunks):
+    """Returns stripped down words
     """
-    slinks = pd.Series()
-    list_links = []
-    for index, row in df.iterrows():
-        list_links = []
-        links = ""
-        for i in range(10):
-            link = row[0][0][1]
-            links += link + " "
-        slink = pd.Series(links)
-        slinks = slinks.append(slink)
-    return slinks
+    words = [ word_tokenize(sent) for sent in sent_tokenize(chunks) ]
+    flatten = [ inner for sublist in words for inner in sublist ]
+    stripped = []
+
+    for word in flatten:
+        if word not in stopwords.words('english'):
+            try:
+                stripped.append(word.encode('latin-1').decode('utf8').lower())
+            except:
+                #print "Cannot encode: " + word
+                pass
+
+    return [ word for word in stripped if len(word) > 1 ]
