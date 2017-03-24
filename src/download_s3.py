@@ -12,7 +12,8 @@ if __name__ == '__main__':
   print "files to download:" , filenames
   #for file in os.listdir('../data/'):  #for local
 
-  for filename in b.objects.all():
+  for key in b.objects.all():
       #if db.biz.find( { "Filename" : key.key} ).count() < 1:
-      b.put_object(Key=filename, Body=details)
-      print "downloading file from S3:" , filename
+      #S3Transfer.transfer.download_file('bucket', 'key', key.key)
+      b.put_object(Key=key.key, Body=key.body)
+      print "downloading file from S3:" , key.key
