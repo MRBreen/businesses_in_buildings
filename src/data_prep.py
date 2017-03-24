@@ -36,6 +36,8 @@ def remove_non_ascii(text):
     CHARSET = set(string.lowercase + string.uppercase + string.whitespace + '.')
     return ''.join(c for c in text if c in CHARSET)
 
+
+
 """    line
     for c in text:
         if c in CHARSET:
@@ -49,23 +51,34 @@ def remove_non_ascii(text):
 def clean_links(ser):
     """
     """
-    for i in range(1):
-        links = [(v[0][i][1]) for v in ser.values]
 
-        links = [remove_non_ascii(x) for x in links]
-        y = []
-        x = []
-        for link in links:
-            x = link.split("w.")
-            if len(x) > 1:
-                core = x[1]
-            else:
-                core = x[0]
+    links = [(v[0][0][1]) for v in ser.values]
 
-            if '.' in link:
-                core = core.split(".")[0]
-            y.append(core)
+    links = [remove_non_ascii(x) for x in links]
+    y = []
+    x = []
+    for link in links:
+        x = link.split("w.")
+        if len(x) > 1:
+            core = x[1]
+        else:
+            core = x[0]
+
+        if '.' in link:
+            core = core.split(".")[0]
+        y.append(core)
     return y
+
+def compress_links(links):
+    """
+    """
+    out = []
+    for row in links:
+        group = ""
+        for item in links:
+            group += " " + item
+        out.append(group)
+    return(out)
 
 def tokenize_and_normalize(chunks):
     """Returns stripped down words
