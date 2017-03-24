@@ -11,7 +11,7 @@ from collections import Counter
 
 
 if __name__=='__main__':
-    df = read_mongo('wa', 'bing', max=100)
+    df = read_mongo('wa', 'bing', max=10)
     df = clean_df(df)
     df_link = get_array_from_list(df[['Links']])
     dt_text = get_array_from_list(df[['Text']])
@@ -19,7 +19,8 @@ if __name__=='__main__':
 
     print "Size: " , df_text_train.size
     print "Getting Bag Of Words...."
-    df_list = df_text_train.tolist()
+    df_list = df_text_train #.tolist()
+    print "Len of list: " , df_list.size
     print "A sample list:" , df_list[3:4]
     bows = get_bows(df_list)
 
