@@ -34,16 +34,16 @@ def clean_df(df):
 
 def remove_non_ascii(text):
     CHARSET = set(string.lowercase + string.digits + string.uppercase + string.whitespace + '.')
-    #return ''.join(c for c in text if c in CHARSET)
+    return ''.join(c for c in text if c in CHARSET)
 
-    line =''
+"""    line
     for c in text:
         if c in CHARSET:
             d = c
         else:
-            d = ' '
-        line = ''.join(d)
-    return line
+            d =
+        line = .join(d)
+    return line"""
 
 def tokenize_and_normalize(chunks):
     """Returns stripped down words
