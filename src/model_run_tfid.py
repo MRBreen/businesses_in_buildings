@@ -11,12 +11,15 @@ from sklearn.metrics.pairwise import linear_kernel
 from nltk.tokenize.moses import MosesTokenizer
 import cPickle as pickle
 import csv
+import time
+
 
 if __name__=='__main__':
 
 
     source = 'mongo'
-
+    documents = 'links'  # to be explicit on which data set is being used
+    file_pref = 'model/se_10102'  #
 
     if source =='mongo':
         df = read_mongo('wa', 'bing', max=0)
@@ -40,43 +43,42 @@ if __name__=='__main__':
         #links = [x.decode('ascii') for x in links]
         #links_test = clean_links(df_test[['Links']])
         #links_test = unlist_links(links_test)
+        df_train.to_csv(file_pref + '_all_train.csv')
+        df_test.to_csv(file_pref + '_all_test.csv')
+        with open(file_pref + '_text_list.pkl', 'wb') as fp:
+            pickle.dump(text, fp)
+        with open(file_pref + '_links_list.pkl', 'wb') as fp:
+            pickle.dump(links, fp)
+        #with open (file_pref + '_text.txt', 'w') as f:
+        #    [f.write(i + "\n") for i in text]
+        #with open (file_pref + '_links.txt', 'w') as f:
+        #    [f.write(i) for i in links]
 
     if source != 'mongo':
         filename = sys.argv(1)    #'llinks_fr_0053.pkl'
-        df_train = pd.read_csv(filename[0:-4] + '_train.csv')
-        df_test = pd.read_csv(filename[0:-4] + '_test.csv')
+        df_train = pd.read_csv(file_pref + '_train.csv')
+        df_test = pd.read_csv(file_pref + '_test.csv')
 
-
-    documents = links  # to be explicit on which data set is being used
-    filename = 'model/sun_10102_links_.pkl'  #
-
+    documents = links
 
     print "Number of docs: " , len(links)
-
-    if source == 'mongo':
-        df_train.to_csv(filename[0:-4] + '_all_train.csv')
-        df_test.to_csv(filename[0:-4] + '_all_test.csv')
-        with open (filename[0:-4] + 'text_train.txt', 'w') as f:
-            [f.write(i + "\n") for i in text]
-        #with open (filename[0:-4] + 'text_test.txt', 'w') as f:
-        #    [f.write(i) for i in text_test]
-        with open (filename[0:-4] + 'links_train.txt', 'w') as f:
-            [f.write(i) for i in links]
-        #with open (filename[0:-4] + 'links_test.txt', 'w') as f:
-        #    [f.write(i) for i in links_test]
-
 
     print "Date is cleaned, and 5 files written...starting model"
 
     if source != 'mongo':
-        df_train.to_csv(filename[0:-4] + '_all_train.csv')
-        df_test.to_csv(filename[0:-4] + '_all_test.csv')
+        df_train.to_csv(file_pref + '_all_train.csv')
+        df_test.to_csv(file_pref + '_all_test.csv')
 
     #if ext, the tokenizer has minimum of 4 letters, else default of 2 letters.
+    start = time.time()
     if documents == text:
         vectorizer = TfidfVectorizer(decode_error='ignore', token_pattern=r'\b\w[a-zA-Z]{2,}\w+\b', stop_words='english')
     else:
         vectorizer = TfidfVectorizer(decode_error='ignore', stop_words='english')
+
+    with open(file_pref + 'vect.pkl', 'w') as f:
+        pickle.dump(vectorizer, f)
+    print 'vect:' , time.time() - start
 
     tfidf_docs = vectorizer.fit_transform(documents)
     print "tfid finished"
@@ -84,6 +86,7 @@ if __name__=='__main__':
 
     cos_sims = linear_kernel(tfidf_docs)
     print "cosine similarity finished"
+    print 'Cos + vect:' , time.time() - start
 
-    with open(filename, 'w') as f:
+    with open(file_pref + '_cos.pkl', 'w') as f:
         pickle.dump(cos_sims, f)
