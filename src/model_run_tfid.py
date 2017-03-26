@@ -4,7 +4,6 @@ from src.data_prep import read_mongo
 from src.data_prep import clean_df
 from src.data_prep import remove_non_ascii
 from src.data_prep import clean_links
-from src.data_prep import unlist_links
 import string
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -20,14 +19,14 @@ if __name__=='__main__':
 
 
     if source =='mongo':
-        df = read_mongo('wa', 'bing', max=10)
+        df = read_mongo('wa', 'bing', max=0)
         df = clean_df(df)
         df_train, df_test = train_test_split(df, test_size=0)
 
         text = [x for x in df_train['Text'].values[0]]
         #for i in range(df_train['Text'].shape[0]):
         #text.append(df_train['Text'].iloc[i] + " ")
-        text = [remove_non_ascii(t) for t in text]
+        text = remove_non_ascii(text)
 
         #text_test = [x for x in df_test['Text'].values[0]]
         #text_test =[]
@@ -35,10 +34,10 @@ if __name__=='__main__':
         #     text_test.append(df_test['Text'].iloc[i])
         #text_test = [remove_non_ascii(str(t)) for t in text_test]
 
-        links = [x for x in df_train['Links'].values[0]]
+        links = [x for x in df_train['Links'].values]
         links = [remove_non_ascii(link) for link in links]
         links = clean_links(links)
-        links = unlist_links(links)
+        #links = [x.decode('ascii') for x in links]
         #links_test = clean_links(df_test[['Links']])
         #links_test = unlist_links(links_test)
 
@@ -49,10 +48,10 @@ if __name__=='__main__':
 
 
     documents = links  # to be explicit on which data set is being used
-    filename = 'model/sat_100_text_.pkl'  #
+    filename = 'model/sun_10102_links_.pkl'  #
 
 
-    print "Number of docs: " , len(text)
+    print "Number of docs: " , len(links)
 
     if source == 'mongo':
         df_train.to_csv(filename[0:-4] + '_all_train.csv')
@@ -73,7 +72,12 @@ if __name__=='__main__':
         df_train.to_csv(filename[0:-4] + '_all_train.csv')
         df_test.to_csv(filename[0:-4] + '_all_test.csv')
 
-    vectorizer = TfidfVectorizer(decode_error='ignore', token_pattern='.*\([a-z|A-Z]\{4,\}\)', stop_words='english')
+    #if ext, the tokenizer has minimum of 4 letters, else default of 2 letters.
+    if documents == text:
+        vectorizer = TfidfVectorizer(decode_error='ignore', token_pattern=r'\b\w[a-zA-Z]{2,}\w+\b', stop_words='english')
+    else:
+        vectorizer = TfidfVectorizer(decode_error='ignore', stop_words='english')
+
     tfidf_docs = vectorizer.fit_transform(documents)
     print "tfid finished"
     feature_words = vectorizer.get_feature_names()
