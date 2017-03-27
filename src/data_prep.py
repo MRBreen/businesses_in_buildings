@@ -31,6 +31,12 @@ def clean_df(df):
     """
     df = df.dropna()
     df = df.drop_duplicates(subset='Bus Search')
+    delete_close_duplicates = ['UPSIDE COMMERCE, INC. 111 S JACKSON ST #451', 'UPSIDE 111 s Jackson',
+               '3DISCOVERED, INC.111 S JACKSON ST.98104',
+              'ALGOSNAP INC.111 S JACKSON ST98104']
+    for d in delete_close_duplicates:
+        df = df[df['Bus Search'].str.contains(d) != True]
+
     return df
 
 def remove_non_ascii(text):
