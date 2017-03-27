@@ -19,7 +19,7 @@ if __name__=='__main__':
 
     source = 'mongo'
     documents = 'links'  # to be explicit on which data set is being used
-    file_pref = 'model/sea_10100' #
+    file_pref = 'model/sea_5000' #
 
     if source =='mongo':
         df = read_mongo('wa', 'bing', max=0)
