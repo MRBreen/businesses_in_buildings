@@ -13,25 +13,26 @@ import time
 def reconst_mse(target, left, right):
     return (np.array(target - left.dot(right))**2).mean()
 
-def describe_nmf_results(doc_term_mat, W, H, n_top_words = 15):
+def describe_nmf_results(doc_term_mat, W, H, file_pref, n_top_words = 15):
     print("Reconstruction error: %f") %(reconst_mse(doc_term_mat, W, H))
-    with open (file_pref + '_' + str(H.shape[0]) + '_describe_results.txt', 'w') as f:
+    c = []
+    with open (file_pref + '_' + str(H.shape[0]) + '_describe_results.txt', 'w+') as f:
         f.write("")
     for topic_num, topic in enumerate(H):
-        a = "Topic %d:" % topic_num
+        a = "Topic %d: " % topic_num
         b = (" ".join([feature_words[i] \
                 for i in topic.argsort()[:-n_top_words - 1:-1]]))
-        with open (file_pref + '_' + str(H.shape[0]) + '_describe_results.txt', 'a') as f:
-            f.write(a + b)
-        print a
-        print b
+        c = a + b + ' \n'
+        print c
+        f = open (file_pref + '_' + str(H.shape[0]) + '_describe_results.txt', 'a+')
+        f.write(a + b + ' \n')
+        f.close()
     return
 
 def my_nmf(doc_term_mat, n_components, n_iterations=50, eps=1e-6):
     n_rows, n_cols = doc_term_mat.shape
     W = rand(n_rows*n_components).reshape([n_rows, n_components])
     H = rand(n_components*n_cols).reshape([n_components, n_cols])
-    # linalg.lstsq doesn't work on sparse mats
     dense_doc_term_mat = doc_term_mat.todense()
     for i in range(n_iterations):
         H = np.linalg.lstsq(W, dense_doc_term_mat)[0].clip(eps)
@@ -40,10 +41,10 @@ def my_nmf(doc_term_mat, n_components, n_iterations=50, eps=1e-6):
 
 if __name__ == "__main__":
     n_features = 15000
-    n_topics = 5
     start = time.time()
 
-    file_pref = 'model/sea_5000'
+    #file_pref = 'model/sea_5000'
+    file_pref = 'model/mini_100'
     with open(file_pref + '_vectorizer_links.pkl') as f:
         vectorizer_pkl = pickle.load(f)
     with open(file_pref + '_links_list.pkl') as f:
@@ -55,7 +56,7 @@ if __name__ == "__main__":
 
     print 'start up:' , time.time() - start
 
-    for n_topics in range(1,4):
+    for n_topics in range(1,5):
         feature_words = vectorizer_pkl.get_feature_names()
         print 'Time for Features:' , time.time() - start
 
@@ -67,5 +68,5 @@ if __name__ == "__main__":
 
         print("\n\n---------\nMy decomposition")
         W_mine, H_mine = my_nmf(doc_term_mat, n_components=n_topics, n_iterations=50, eps=1e-6)
-        describe_nmf_results(doc_term_mat, W_mine, H_mine)
+        describe_nmf_results(doc_term_mat, W_mine, H_mine, file_pref)
         print 'Time for fit transform:' , time.time() - start
