@@ -30,6 +30,7 @@ def clean_df(df):
     """ cleans up df for all models
     """
     df = df.dropna()
+    df = df.drop_duplicates(subset='Bus Search')
     return df
 
 def remove_non_ascii(text):
