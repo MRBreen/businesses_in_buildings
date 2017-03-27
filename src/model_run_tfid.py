@@ -19,10 +19,10 @@ if __name__=='__main__':
 
     source = 'mongo'
     documents = 'links'  # to be explicit on which data set is being used
-    file_pref = 'model/mini_100'  #
+    file_pref = 'model/sea_10100' #
 
     if source =='mongo':
-        df = read_mongo('wa', 'bing', max=500)
+        df = read_mongo('wa', 'bing', max=0)
         df = clean_df(df)
         df_train, df_test = train_test_split(df, test_size=0)
 
@@ -81,6 +81,9 @@ if __name__=='__main__':
     with open(file_pref + '_doc_term_mat_links.pkl', 'w') as f:
         pickle.dump(doc_term_mat, f)
     print "doc term fit finished: " , time.time() - start
+
+    with open(file_pref + '_vectorizer_links.pkl', 'w') as f:
+        pickle.dump(vectorizer, f)
 
     cos_sims = linear_kernel(doc_term_mat)
     print 'cos similarity finished...dumping to pkl: ' , time.time() - start
