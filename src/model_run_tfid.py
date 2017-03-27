@@ -19,10 +19,10 @@ if __name__=='__main__':
 
     source = 'mongo'
     documents = 'links'  # to be explicit on which data set is being used
-    file_pref = 'model/se_10102'  #
+    file_pref = 'model/mini_100'  #
 
     if source =='mongo':
-        df = read_mongo('wa', 'bing', max=0)
+        df = read_mongo('wa', 'bing', max=500)
         df = clean_df(df)
         df_train, df_test = train_test_split(df, test_size=0)
 
@@ -55,7 +55,7 @@ if __name__=='__main__':
         #    [f.write(i) for i in links]
 
     if source != 'mongo':
-        filename = sys.argv(1)    #'llinks_fr_0053.pkl'
+        filename = sys.argv(1)
         df_train = pd.read_csv(file_pref + '_train.csv')
         df_test = pd.read_csv(file_pref + '_test.csv')
 
@@ -75,18 +75,15 @@ if __name__=='__main__':
         vectorizer = TfidfVectorizer(decode_error='ignore', token_pattern=r'\b\w[a-zA-Z]{2,}\w+\b', stop_words='english')
     else:
         vectorizer = TfidfVectorizer(decode_error='ignore', stop_words='english')
+    print 'vect finished: ' , time.time() - start
 
-    with open(file_pref + 'vect.pkl', 'w') as f:
-        pickle.dump(vectorizer, f)
-    print 'vect:' , time.time() - start
+    doc_term_mat = vectorizer.fit_transform(documents)
+    with open(file_pref + '_doc_term_mat_links.pkl', 'w') as f:
+        pickle.dump(doc_term_mat, f)
+    print "doc term fit finished: " , time.time() - start
 
-    tfidf_docs = vectorizer.fit_transform(documents)
-    print "tfid finished"
-    feature_words = vectorizer.get_feature_names()
-
-    cos_sims = linear_kernel(tfidf_docs)
-    print "cosine similarity finished"
-    print 'Cos + vect:' , time.time() - start
-
-    with open(file_pref + '_cos.pkl', 'w') as f:
+    cos_sims = linear_kernel(doc_term_mat)
+    print 'cos similarity finished...dumping to pkl: ' , time.time() - start
+    with open(file_pref + '_cos_links.pkl', 'w') as f:
         pickle.dump(cos_sims, f)
+    print 'done. daved to pkl: ' , time.time() - start
