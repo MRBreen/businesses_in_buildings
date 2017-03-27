@@ -57,12 +57,17 @@ if __name__ == "__main__":
     print 'start up:' , time.time() - start
 
     for n_topics in range(1,5):
+
+
         feature_words = vectorizer_pkl.get_feature_names()
         print 'Time for Features:' , time.time() - start
 
         print("\n\n---------\nsklearn decomposition")
-        nmf = NMF(n_components=n_topics)
-        W_sklearn = nmf.fit_transform(doc_term_mat)
+        nmf = NMF(n_components=n_topics, random_state=73,
+          alpha=.1, l1_ratio=.5).fit(doc_term_mat)
+        W_sklearn = nmf.transform(doc_term_mat)
+        with open(file_pref + '_links_nmf_fit_trans_' + str(n_topics) + '.pkl', 'wb') as fp:
+            pickle.dump(W_sklearn, fp)
         H_sklearn = nmf.components_
         print 'Time for fit transform:' ,  time.time() - start
 
