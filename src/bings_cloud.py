@@ -29,7 +29,7 @@ def get_search_text(collection):
                                                     'Professional Service Corporation',
                                                     'Profit Corporation',
                                                     'Sole Proprietor',] } ,
-                                                "status" : 'a' } )
+                                                "status" : "$nin" : [ 1 , 2 } )
     search = (record['Bus Name'] + " " + record['Address'] + " " + record['City']).encode('utf-8')
     db.biz.update_many({'Bus Name' : record['Bus Name'], 'Address' : record['Address']}, { '$set' : {'status' : 1}})
     return (search, record)
@@ -75,7 +75,7 @@ if __name__ == '__main__':
         filename = str(t.year)+str(t.month)+str(t.day)+"_"+str(t.hour)+str(t.minute)+str(t.second)+"_"+words[0:4]+'.html'
         details = browser.page_source
         write_to_s3(details, filename)
-        db.biz.update_one({"_id" : record['_id']}, { '$set' : {'status' : 2}})
+        db.biz.update_one({"_id" : record['_id']}, { '$set' : {'status' : 'z'}})
         browser.close()
         print "success" , filename
     print "Done"
