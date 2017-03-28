@@ -11,17 +11,25 @@ import datetime
 import boto3
 
 def sleep():
-    time.sleep(5.3+random.random()*2.5)
+    time.sleep(4.3+random.random()*15)
 
 def get_search_text(collection):
     """gets search text from mongoDB biz collection and updates the record status to 1
     """
-    record = collection.find_one({'Entity' : { "$in": [ "Profit Corporation",
-                                          "Corporation",
-                                          "Limited Liability Company",
-                                          "Professional Limited Liability Company",
-                                         "Joint Venture"] } ,
-                            'status' : { "$nin" : [ 1 , 2 ] } } )
+    record = collection.find_one({'Entity' : { "$in": [ 'Association',
+                                                    'Cooperative Corporation',
+                                                    'Corporation',
+                                                    'Joint Venture',
+                                                    'Limited Liability Company',
+                                                    'Limited Liability Limited Partnership',
+                                                    'Limited Liability Partnership',
+                                                    'Limited Partnership',
+                                                    'Partnership',
+                                                    'Professional Limited Liability Company',
+                                                    'Professional Service Corporation',
+                                                    'Profit Corporation',
+                                                    'Sole Proprietor',] } ,
+                                                "status" : 'a' } )
     search = (record['Bus Name'] + " " + record['Address'] + " " + record['City']).encode('utf-8')
     db.biz.update_many({'Bus Name' : record['Bus Name'], 'Address' : record['Address']}, { '$set' : {'status' : 1}})
     return (search, record)
@@ -46,7 +54,7 @@ if __name__ == '__main__':
     db = db_cilent['wa']
     collection = db.biz
 
-    loops = 10000
+    loops = 3
     print "length of sys.argv is: " , len(sys.argv)
     if len(sys.argv) == 2:
         loops = int(sys.argv[1])
@@ -68,6 +76,6 @@ if __name__ == '__main__':
         details = browser.page_source
         write_to_s3(details, filename)
         db.biz.update_one({"_id" : record['_id']}, { '$set' : {'status' : 2}})
-        browser.quit()
+        browser.close()
         print "success" , filename
     print "Done"
