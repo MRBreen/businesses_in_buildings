@@ -44,8 +44,10 @@ if __name__=='__main__':
         df = df.drop(['Filename','Addr_mail', 'Entity', 'UBI', 'status'], axis=1)
         df = df[~df['Bus Name'].isnull()]
 
+        # merge with output from the model
         file_pref = 'model/sea_5000'
         df_s = pd.read_csv(file_pref + '_group_assignments.csv')
+
         df['match'] = df['Bus Name'].map(str) + " " + df['Address'].map(str) + " " + df['City'].map(str)
         df = df.merge(df_s, how="inner", left_on='match', right_on='Bus Search')
         df = df[['Bus Name', 'Address', 'City', 'Zip', 'Groups']]
