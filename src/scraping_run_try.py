@@ -50,15 +50,15 @@ if __name__ == '__main__':
         current_page, page_max = get_current_page(browser)
     except ValueError:
         pass
-        
+
     for i in range(current_page - active_page):
         print "Pages to go: " , i
         next_page(browser)
         sleep()
-            try:
-                current_page, page_max = get_current_page(browser)
-            except ValueError:
-                pass
+        try:
+            current_page, page_max = get_current_page(browser)
+        except ValueError:
+            pass
     print "current job: " , street, current_page
     for _i in range(stop_page):
         print "current job: " , street, current_page
