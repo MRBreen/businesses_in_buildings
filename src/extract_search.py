@@ -5,10 +5,10 @@ import string
 import os
 import boto3
 import botocore
+import datetime
 
 class BingData(object):
-    """ holds extracted values
-    """
+    """Holds extracted values"""
     def __init__(self):
         self.soup = None
         self.namesearch = None
@@ -18,33 +18,29 @@ class BingData(object):
         self.filename = None
 
     def create_soup(self, key):
-        """ creates the object and connects to folder
-        """
+        """Creates the object and connects to folder"""
         self.filename = key.key
-        #with open (filename) as pagefile:
         page_source = key.get(self.filename)['Body']
         self.soup = BeautifulSoup(page_source, 'html.parser')
 
     def get_namesearch(self):
-        """ gets the search term which begins with the name
-        """
-        self.namesearch = self.soup.find(id = "sb_form_q")['value'].encode('utf-8')
-
+        """Returns thes earch term"""
+        try:
+            self.namesearch = self.soup.find(id = "sb_form_q")['value'].encode('utf-8')
+        except:
+            self.namesearch = ''
 
     def get_num_results(self):
-        """ gets the number of results
-        """
+        """Returns the number of results"""
         ra = self.soup.find('span',{'class':'sb_count'})
         if ra is None:
             return
         r = ra.contents
         if len(r)>0:
             self.num_results = r[0].split(" results")[0].replace(',','').encode('utf-8')
-            #self.num_results = r.split(" results")[0].replace(',','').encode('utf-8')
 
     def get_links(self):
-        """ gets links and text - weaving together to weed out ads
-        """
+        """Returns links and text - both field in one function to filter out ads"""
         linka = self.soup.find_all('div', 'b_attribution')
         if linka is None:
             return
@@ -65,19 +61,11 @@ class BingData(object):
         self.links = links
         self.text = text
 
-    """def get_text(self):
-         #gets text
-
-        texta = self.soup.findAll('p')
-        if texta is None:
-            return
-        text = [i.get_text().encode('utf-8') for i in texta]
-        self.text = text
-    """
-
     def build(self, filename):
-        """ calls subfunction which create values for the parameters
-        arg: filename is html file to be extracted
+        """Calls subfunction which create values for the parameters
+
+        Keyword arguments:
+        filename -- html file to be extracted
         """
         self.create_soup(filename)
         self.get_namesearch()
@@ -85,7 +73,11 @@ class BingData(object):
         self.get_links()
 
     def db_add(self, collection):
-        """ adds file to db
+        """Creates record of namesearch, num_results, links, text
+        in the named collection.
+
+        Keyword arguments:
+        collection -- name of collection for the record
         """
         collection.insert_one({
             "Bus Search" : self.namesearch,
@@ -97,8 +89,8 @@ class BingData(object):
 
 
 if __name__ == '__main__':
-    """code processes all html files and
-    saves fields to records in mongoDB.
+    """Processes an html files and
+    saves fields to a recordsin mongoDB.
     s3 biz-in-buildings-search -> db.wa.bing
     """
     db_cilent = MongoClient()
@@ -107,15 +99,12 @@ if __name__ == '__main__':
 
     s3 = boto3.resource('s3')
     b = s3.Bucket('biz-in-buildings-search')
-    #bo = b.objects
 
     filenames = [key.key for key in b.objects.all()]
-    #filenames = [b.key.encode('utf-8') for b in bo.iterator()]
 
     print "DB and collection is:" , collection.full_name
     print "Initial record count:" , collection.count()
-    #for file in os.listdir('../data/'):  #for local
-
+    
     i = 0
     for key in b.objects.all():
         i+=1
