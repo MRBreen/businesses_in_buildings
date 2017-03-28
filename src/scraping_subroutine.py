@@ -34,7 +34,7 @@ def get_maxrecord(browser):
     total_records = [total_record for total_record in total_records if total_record.text]
     total_record = total_records[0]
     recordtext = total_record.text.encode('utf-8')
-    recordtext = recordtext.encode('utf-8')
+    recordtext = str(recordtext).encode('utf-8')
     _text, maxrecord = recordtext.strip().split("of")
     maxrecord = maxrecord.strip().replace('"','')
     return maxrecord
