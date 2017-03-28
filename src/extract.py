@@ -7,8 +7,7 @@ import boto3
 import botocore
 
 class extract(object):
-    """object holds extracted values using BeautifulSoup
-    """
+    """Extracts values using BeautifulSoup"""
     def __init__(self):
         self.soup = None
         self.business_name = None
@@ -21,16 +20,14 @@ class extract(object):
         self.filename = None
 
     def create_soup(self, key):
-        """creates the object and connects to folder
-        """
+        """Creates the object and connects to folder"""
         self.filename = key.key
         #with open (filename) as pagefile:
         page_source = key.get(self.filename)['Body']
         self.soup = BeautifulSoup(page_source, 'html.parser')
 
     def get_buisiness_name(self):
-        """gets business_name .... all other get_ functions work similarly
-        """
+        """Returns business_name or blank if an error occurred"""
         self.business_name = self.soup.find(id='caption2_c-e')
         if self.business_name is not None:
             self.business_name = self.business_name.contents[0].encode('utf-8').strip()
@@ -38,6 +35,7 @@ class extract(object):
             self.business_name=""
 
     def get_address_one(self):
+        """Returns address or blank if an error occurred"""
         self.address_one = self.soup.find(id='caption2_c-u')
         if self.address_one is not None:
             if len(self.address_one.contents) != 0:
@@ -48,6 +46,7 @@ class extract(object):
             self.address_one=""
 
     def get_address_mailing(self):
+        """Returns mailing address or blank if an error occurred"""
         self.address_mailing = self.soup.find(id='caption2_c-01')
         if self.address_mailing is not None:
             if len(self.address_mailing.contents) != 0:
@@ -58,6 +57,7 @@ class extract(object):
             self.address_mailing=""
 
     def get_zip_code(self):
+        """Returns Zip code or blank if an error occurred"""
         self.zip_code = self.soup.find(id='caption2_c-v')
         if self.zip_code is not None:
             if len(self.zip_code.contents) != 0:
@@ -69,6 +69,7 @@ class extract(object):
             self.zip_code=""
 
     def get_ubi(self):
+        """Returns UBI or blank if an error occurred"""
         self.ubi = self.soup.find(id='caption2_c-i')
         if self.ubi is not None:
             self.ubi = self.ubi.contents[0].encode('utf-8').strip()
@@ -76,8 +77,7 @@ class extract(object):
             self.ubi=""
 
     def get_entity(self):
-        """gets entity type
-        """
+        """Returns the entity type or blank if an error occurred"""
         self.entity = self.soup.find(id='caption2_c-g')
         if self.entity is not None:
             self.entity = self.entity.contents[0].encode('utf-8').strip()
@@ -86,7 +86,9 @@ class extract(object):
 
     def build(self, filenom):
         """Calls subfunction which create values for the parameters
-        arg: filename is html file to be extracted
+
+        Keyword arguments:
+        filenon -- html file to be extracted
         """
         self.create_soup(filenom)
         self.get_buisiness_name()
@@ -97,6 +99,11 @@ class extract(object):
         self.get_entity()
 
     def db_add(self, collection):
+        """Adds record to the database
+
+        Keyword arguments:
+        collection -- the name of the collection in the database
+        """
         collection.insert_one({
                 "Bus Name" : self.business_name,
                 "Address" : self.address_one,
@@ -109,9 +116,9 @@ class extract(object):
             })
 
 if __name__ == '__main__':
-    """code processes all html files in data folder and
+    """Processes all html files in data folder and
     saves fields to records in mongoDB.
-    collection name is defined at the top of the code.
+    Collection name is defined at the top of the code.
     """
     #Define the MongoDB database and collection
     db_cilent = MongoClient()
@@ -120,10 +127,8 @@ if __name__ == '__main__':
 
     s3 = boto3.resource('s3')
     b = s3.Bucket('biz-in-buildings')
-    #bo = b.objects
 
     filenames = [key.key for key in b.objects.all()]
-    #filenames = [b.key.encode('utf-8') for b in bo.iterator()]
 
     print "DB and collection is:" , collection.full_name
     print "Initial record count:" , collection.count()
@@ -132,6 +137,5 @@ if __name__ == '__main__':
     for key in b.objects.all():
         extracted = extract()
         extracted.build(key)
-        if db.biz.find( { "Filename" : key.key} ).count() < 1:
-            extracted.db_add(collection)
+        extracted.db_add(collection)
     print "Final record count:" , collection.count()
