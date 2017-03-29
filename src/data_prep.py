@@ -60,22 +60,32 @@ def remove_non_ascii(text):
 
 def clean_links(links):
     """Parces a long link down to the first non-www part of the address"""
-    clean = []
-    for sublist in links:
-        a = ''
-        links_company = ''
-        for link in sublist:
-            x = str(link).split('w.')
-            if len(x) > 1:
-                core = x[1]
-            else:
-                core = x[0]
+    flatten = [item for sublist in links for item in sublist]
+    flatten = str(flatten)
+    print flatten
+    text = string.replace(flatten, '\\' ,  "/" )
 
-            if '.' in str(link):
-                core = core.split('.')[0]
-            links_company += core + ' '
-        clean.append(links_company.decode('ascii'))
-    return(clean)
+    print text
+    clean = []
+    for i in range(10):
+        text = text
+        print ' text' , text
+        next_start = text.find("]")
+        url = text[:text.find('/')]
+        print 'url: ', url
+        try:
+            split_number = url.count('.')
+        except:
+                pass
+        try:
+            source = (url.split('.')[split_number-1])
+        except:
+                pass
+        if source not in ["u'Ad", "Ad"]:
+            clean.append(source)
+        text = text[text.find(", u'")+4:]
+        print 'text: ' , text
+    return(" ".join(clean))
 
 def tokenize_and_normalize(chunks):
     """Returns stripped down words"""
