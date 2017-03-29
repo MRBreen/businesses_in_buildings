@@ -15,9 +15,9 @@ import time
 if __name__=='__main__':
 
 
-    source = 'biz'
+    source = 'bing'
     documents = 'links'  # to be explicit on which data set is being used
-    file_pref = 'model/sea_5000.pkl' #
+    file_pref = 'model/sea_5300.pkl' #
 
     if source =='bing':
         df = read_mongo('wa', 'bing', max=0)
