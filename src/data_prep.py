@@ -103,7 +103,7 @@ def flatten(text):
     flat = []
     for row in text:
         flat.append(row[1])
-    return(flat.append(" ".join(a)))
+    return(" ".join(flat))
 
 def tokenize_and_normalize(chunks):
     """Returns stripped down words."""
