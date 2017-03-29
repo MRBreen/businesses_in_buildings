@@ -43,4 +43,4 @@ if __name__=='__main__':
     with open(file_pref + '_links_list.pkl', 'wb') as fp:
         pickle.dump(links, fp)
     print "Number of docs: " , len(links)
-    print "Date is cleaned, and 4 files written...starting model"
+    print "Date is cleaned, and 2 files written...starting model"
