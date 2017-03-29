@@ -62,17 +62,11 @@ def clean_links(links):
     """Parces a long link down to the first non-www part of the address"""
     flatten = [item for sublist in links for item in sublist]
     flatten = str(flatten)
-    print flatten
     text = string.replace(flatten, '\\' ,  "/" )
-
-    print text
     clean = []
     for i in range(10):
-        text = text
-        print ' text' , text
         next_start = text.find("]")
         url = text[:text.find('/')]
-        print 'url: ', url
         try:
             split_number = url.count('.')
         except:
@@ -84,7 +78,6 @@ def clean_links(links):
         if source not in ["u'Ad", "Ad"]:
             clean.append(source)
         text = text[text.find(", u'")+4:]
-        print 'text: ' , text
     return(" ".join(clean))
 
 def tokenize_and_normalize(chunks):
