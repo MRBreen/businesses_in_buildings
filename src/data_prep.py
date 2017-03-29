@@ -22,7 +22,11 @@ def read_mongo(db, collection, max=0, query={}, host='localhost', port=27017, us
     return df
 
 def clean_df(df):
-    """Returns a dataframe without n/a and duplicates."""
+    """Returns a dataframe without n/a and duplicates.
+
+    Key Arguments:
+    df -- dataframe
+    """
     df = df.dropna()
     df = df.drop_duplicates(subset='Bus Search')
     delete_close_duplicates = ['UPSIDE COMMERCE, INC. 111 S JACKSON ST #451', 'UPSIDE 111 s Jackson',
@@ -32,8 +36,12 @@ def clean_df(df):
         df = df[df['Bus Search'].str.contains(d) != True]
     return df
 
-def get_y_labels(df):
-    """Creates identification labels, pseudo-y, to track preselected Companies."""
+def tracking_labels(df):
+    """Creates identification labels to track preselected Companies.
+
+    Key Arguments:
+    df -- dataframe
+    """
     interest_group = pd.read_csv('data/interest_group.csv', header=0)
     df_i = interest_group[['Bus Search']]
     df_i.drop(['Bus Search'] == 'BRICKMAN SOUTH JACKSON LLC 111 S JACKSON Seattle')
@@ -43,7 +51,11 @@ def get_y_labels(df):
     return(df_merged)
 
 def remove_non_ascii(text):
-    """Steps through every character and replaces non_ascii with white space."""
+    """Steps through every character and replaces non_ascii with white space.
+
+    Key Arguments:
+    text -- text string of data that has or might have unicode
+    """
     CHARSET = set(string.lowercase + string.uppercase + string.whitespace + '.')
     out_row = []
     for sublist in text:
@@ -57,7 +69,11 @@ def remove_non_ascii(text):
     return(out_row)
 
 def clean_links(links):
-    """Parces a long link down to the first non-www part of the address."""
+    """Parces a long link down to the first non-www part of the address.
+
+    Key Arguments:
+    links -- list of the links scrapped
+    """
     flatten = [item for sublist in links for item in sublist]
     flatten = str(flatten)
     text = string.replace(flatten, '\\' ,  "/" )
@@ -78,15 +94,16 @@ def clean_links(links):
         text = text[text.find(", u'")+4:]
     return(" ".join(clean))
 
-def flatted(text):
-    """Removes lists inside the data for other functions to use. """
+def flatten(text):
+    """Removes lists inside the data for other functions to use.
+
+    Key Arguments:
+    text -- list of text scrapped in the format of list within a list
+    """
     flat = []
-    for page in text:
-        a = []
-        for row in page:
-            a.append(row[1])
-        flat.append(" ".join(a))
-    return(flat)
+    for row in text:
+        flat.append(row[1])
+    return(flat.append(" ".join(a)))
 
 def tokenize_and_normalize(chunks):
     """Returns stripped down words."""
