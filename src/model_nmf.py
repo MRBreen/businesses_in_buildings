@@ -42,11 +42,12 @@ if __name__ == "__main__":
     group_assignments.csv - assigns group to the original data based on argmax
     """
     n_features = 15000
-    start = time.time()
     doc_source = 'text' # if not 'links', program defaults to text
     start_file = 'model/alpha_5500.pkl'
     file_pref = start_file[0:-4] # keeps file names consistent
 
+    ############  modify above  #######
+    start = time.time()
 
     if doc_source == 'links':
         with open(file_pref + '_links_list.pkl') as f:

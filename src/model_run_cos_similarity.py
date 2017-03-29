@@ -15,53 +15,39 @@ import time
 
 
 if __name__=='__main__':
-    """Creates excel document of cleaned data and pickle files
+    """Runs cosine similarity and saves results to a file
     """
-    source = 'mongo'
-    doc_source = 'text'  # 'links' else defaults to text
-    file_pref = 'model/mini_100.pkl' #
 
-    if source =='mongo':
-        df = read_mongo('wa', 'bing', max=50)
-        df = clean_df(df)
-        df = tracking_labels(df)
+    doc_source = 'text' # if not 'links', program defaults to text
+    start_file = 'model/alpha_5500.pkl'
 
-        links_raw = [x for x in df['Links'].values]
-        print 'links in lambda' ,links_raw
-        links = map(clean_links, links_raw)
-        print '\nclean \n' ,links
-        print "type(links) " ,type(links)
-        print "type(links[4]) ", type(links[4])
+    ############  modify above  #######
+    file_pref = start_file[0:-4] # keeps file names consistent
 
-        text = df['Text']
-        text = map(flatten, text)
-        print 'type(text)' , type(text)
-        print 'type(text[4])' ,type(text[4])
-
-        df.to_csv(file_pref + '_all.csv')
-        with open(file_pref + '_text_list.pkl', 'wb') as fp:
-            pickle.dump(text, fp)
-        with open(file_pref + '_links_list.pkl', 'wb') as fp:
-            pickle.dump(links, fp)
-        print "Number of docs: " , len(links)
-        print "Date is cleaned, and 4 files written...starting model"
-
-    if source != 'mongo':
-        filename = sys.argv(1)
-        df = pd.read_csv(file_pref + '_train.csv')
-
-    #if text, the tokenizer has minimum of 4 letters, else default of 2 letters.
     start = time.time()
     if doc_source == 'links':
-        documents = links
-        vectorizer = TfidfVectorizer(decode_error='ignore', stop_words='english')
-        print vectorizer.idf_
+        with open(file_pref + '_links_list.pkl') as f:
+            documents = pickle.load(f)
     else:
-        documents = text
-        vectorizer = TfidfVectorizer(decode_error='ignore', token_pattern=r'\b\w[a-zA-Z]{2,}\w+\b', stop_words='english')
+        with open(file_pref + '_text_list.pkl') as f:
+            documents = pickle.load(f)
 
+    print 'Files loaded in:' , time.time() - start
+
+    #if text, the tokenizer accepts a minimum of 4 letters, else default of 2 letters.
+    if doc_source == 'links':
+        vectorizer = TfidfVectorizer(decode_error='ignore',
+                                    max_features=n_features,
+                                    stop_words='english')
+    else:
+        vectorizer = TfidfVectorizer(decode_error='ignore',
+                                max_features=n_features,
+                                token_pattern=r'\b\w[a-zA-Z]{2,}\w+\b',
+                                stop_words='english')
+
+    doc_term_mat = vectorizer.fit_transform(documents)
     print 'Vectorizer model instance ready: ' , time.time() - start
-    #print documents
+
     doc_term_mat = vectorizer.fit_transform(documents)
     with open(file_pref + '_doc_term_mat_links.pkl', 'w') as f:
         pickle.dump(doc_term_mat, f)
