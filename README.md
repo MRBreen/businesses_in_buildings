@@ -5,9 +5,9 @@ To find find businesses in a local area which may not be readily known.  Finding
 Data was sourced from the Washington Business License Service one scrape at a time by street name and city of Seattle.  Business licenses designate the entity type, and some of the ones of interest in this project include  corporations, llc, and joint ventures.  The company name, registered business address and Seattle were put into a bing search.  Subsequent data scraping placed data into three main categories: ten links, ten text summaries paired with each link and the number of search results.
 
 ## Data
-Queried public records with Selenium - saved Webpage (.html) in AWS S3.\n
-Extracted name and address with Beautiful Soup - saved data in MongoDB.\n
-Queried search engine with Selenium - saved webpage (.html) in AWS S3.\n
+Queried public records with Selenium - saved Webpage (.html) in AWS S3.<br />
+Extracted name and address with Beautiful Soup - saved data in MongoDB.<br />
+Queried search engine with Selenium - saved webpage (.html) in AWS S3.<br /> 
 Extracted data with Beautiful Soup - saved data in MongoDB.
 
 ## Modeling
